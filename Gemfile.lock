@@ -128,7 +128,8 @@ GEM
       uniform_notifier (~> 1.10.0)
     byebug (9.0.5)
     cancancan (1.15.0)
-    capybara (2.5.0)
+    capybara (2.7.1)
+      addressable
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
       rack (>= 1.0.0)
@@ -713,7 +714,7 @@ DEPENDENCIES
   bullet
   byebug
   cancancan
-  capybara (~> 2.5.0)
+  capybara
   capybara-select2
   carrierwave (~> 0.10.0)
   carrierwave_backgrounder (= 0.4.2)

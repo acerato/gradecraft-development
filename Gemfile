@@ -132,7 +132,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'capybara', '~> 2.5.0'
+  gem 'capybara'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner', '~> 1.5.1'
   gem 'faker'
