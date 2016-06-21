@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.2.2'
 
+# gem 'rails', '>= 5.0.0.rc1', '< 5.1'
 gem 'rails'
 gem 'resque', '1.26'
 gem 'activerecord-import'
@@ -11,6 +12,8 @@ gem 'acts_as_list'
 gem 'addressable'
 gem 'angularjs-rails', '~> 1.4.2'
 gem 'angular-rails-templates'
+gem 'tilt', '~> 1.4.1' # needed for Sinatra 1.0
+gem 'sinatra', '1.0' # pinned at 1.0 because we need rack 2.0
 
 # zip utility for simple creation of zip files, pure ruby implementation
 # without the GC overhead of the Rubyzip library
@@ -139,7 +142,7 @@ group :test do
   gem 'factory_girl_rails', '~> 4.5.0'
   gem 'capybara-select2'
   gem 'launchy'
-  gem 'rspec-rails', '~> 3.4.2'
+  gem 'rspec-rails', '3.5.0.beta3'
   # add spec helpers for testing Resque objects and resque scheduler
   gem 'resque_spec', github: 'leshill/resque_spec'
   gem 'rspec-html-matchers'
