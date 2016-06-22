@@ -608,7 +608,7 @@ GEM
       sprockets (> 2.11)
       sprockets-rails
       tilt
-    scrypt (2.1.1)
+    scrypt (2.0.2)
       ffi-compiler (>= 0.0.2)
       rake
     select2-rails (4.0.3)
@@ -790,7 +790,7 @@ DEPENDENCIES
   sampler
   sanitize
   sassc-rails
-  scrypt
+  scrypt (= 2.0.2)
   select2-rails
   selenium-webdriver
   simple_form
