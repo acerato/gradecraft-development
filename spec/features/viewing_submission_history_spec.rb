@@ -20,8 +20,10 @@ feature "viewing submission history" do
       previous_comment = submission.text_comment
       PaperTrail.whodunnit = student.id
       submission.update_attributes text_comment: "This is an updated comment"
-      visit assignment_submission_path assignment, submission, anchor: "history"
-      expect(page).to have_content "#{student.name} changed the text comment from \"#{previous_comment}\" to \"This is an updated comment\""
+      visit assignment_submission_path assignment, submission
+      find("a", text: "Submission History").click do
+        expect(page).to have_content "#{student.name} changed the text comment from \"#{previous_comment}\" to \"This is an updated comment\""
+      end
     end
   end
 
@@ -31,8 +33,10 @@ feature "viewing submission history" do
     scenario "with some history" do
       PaperTrail.whodunnit = student.id
       submission.update_attributes link: "http://example.org"
-      visit assignment_path assignment, anchor: "history"
-      expect(page).to have_content "You changed the link to \"http://example.org\""
+      visit assignment_path assignment
+      find("a", text: "Submission History").click do
+        expect(page).to have_content "You changed the link to \"http://example.org\""
+      end
     end
   end
 end
