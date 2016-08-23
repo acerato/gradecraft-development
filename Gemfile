@@ -115,7 +115,6 @@ gem 'ruby-saml', '~> 1.0.0'
 group :development do
   gem 'haml-rails'
   gem 'valid_attribute'
-  gem 'quiet_assets'
   gem 'foreman'
   gem 'rubystats'
   gem 'bullet'
