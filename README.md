@@ -69,14 +69,6 @@ To run all of the spec examples with code coverage, you can run the following:
 bundle exec rake spec:coverage
 ```
 
-## Viewing email
-
-The application is using [Mailcatcher](http://mailcatcher.me/) to collect email on development.
-
-Mailcatcher runs a daemon in the background which is started by Foreman and opens up an SMTP port on `localhost:1025`.
-
-In order to view the emails that are sent, you can visit `http://localhost:1080` to view emails that were delivered by the application.
-
 ## Contributing
 
 1. Clone the repository `git clone https://github.com/UM-USElab/gradecraft-development`
