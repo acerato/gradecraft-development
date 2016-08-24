@@ -1,4 +1,4 @@
-GradeCraft::Application.configure do
+Rails.application.configure do
   config.action_controller.default_url_options = { :host => "www.gradecraft.com" }
   config.action_controller.perform_caching = true
   config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"
@@ -7,6 +7,12 @@ GradeCraft::Application.configure do
   config.action_mailer.default_url_options = { :host => "www.gradecraft.com" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.delivery_method = :sparkpost
+  config.action_mailer.perform_caching = false
+  config.action_mailer.raise_delivery_errors = false
+  config.action_cable.mount_path = nil
+  config.action_cable.url = 'wss://gradecraft.com/cable'
+  config.action_cable.allowed_request_origins = [ 'http://gradecraft.com',
+                                                  /http:\/\/gradecraft.*/ ]
   config.active_support.deprecation = :notify
   config.assets.compile = false
   config.assets.compress = true
@@ -18,8 +24,11 @@ GradeCraft::Application.configure do
   config.consider_all_requests_local = false
   config.eager_load = true
   config.i18n.fallbacks = true
+  config.log_formatter = ::Logger::Formatter.new
   config.log_level = :debug
+  config.log_tags = [:request_id]
   config.serve_static_files = false
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
   config.session_store :active_record_store, :expire_after => 60.minutes
 end
 

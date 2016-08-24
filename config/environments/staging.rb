@@ -1,4 +1,4 @@
-GradeCraft::Application.configure do
+Rails.application.configure do
   config.action_controller.default_url_options = { :host => "staging.gradecraft.com" }
   config.action_controller.perform_caching = true
   config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"

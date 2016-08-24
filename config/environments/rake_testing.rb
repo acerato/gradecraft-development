@@ -1,4 +1,4 @@
-GradeCraft::Application.configure do
+Rails.application.configure do
   config.action_controller.perform_caching = false
   config.action_dispatch.best_standards_support = :builtin
   config.action_mailer.default_url_options = { :host => "gradecraft:3000" }

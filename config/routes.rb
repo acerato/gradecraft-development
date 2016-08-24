@@ -1,4 +1,4 @@
-GradeCraft::Application.routes.draw do
+Rails.application.routes.draw do
 
   mount RailsEmailPreview::Engine, at: "emails" if Rails.env.development?
 
