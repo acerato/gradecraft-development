@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 ruby '2.2.2'
 
-#gem 'rails', '>= 5.0.0', '< 5.1'
 gem 'rails'
 gem 'resque', '1.26'
 gem 'activerecord-import'
@@ -13,7 +12,7 @@ gem 'addressable'
 gem 'angularjs-rails', '~> 1.4.2'
 gem 'angular-rails-templates'
 gem 'tilt', '~> 1.4.1' # needed for Sinatra 1.0
-gem 'sinatra', '1.2' # pinned at 1.2 because we need rack 2.0
+gem 'sinatra', '1.0' # pinned at 1.0 because we need rack 2.0
 
 # zip utility for simple creation of zip files, pure ruby implementation
 # without the GC overhead of the Rubyzip library
@@ -59,12 +58,13 @@ gem 'logglier', '~> 0.3.0'
 gem 'multi_json'
 gem 'mini_magick'
 gem 'moped', '2.0.4', git: 'https://github.com/wandenberg/moped.git', branch: 'operation_timeout'
-gem 'mongoid', '~> 4.0.2'
+#gem 'mongoid', '~> 4.0.2'
 gem 'ng-rails-csrf'
 gem 'nokogiri'
 gem 'oauth', git: 'https://github.com/venturit/oauth-ruby.git', branch: 'master'
 gem 'oink'
 gem 'oj'
+gem 'omniauth', '~> 1.3.1'
 gem 'omniauth-canvas'
 gem 'omniauth-kerberos'
 gem 'omniauth-lti', git: 'https://github.com/venturit/omniauth-lti.git', branch: 'master'
