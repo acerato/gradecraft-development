@@ -55,8 +55,7 @@ gem 'logglier', '~> 0.3.0'
 
 gem 'multi_json'
 gem 'mini_magick'
-gem 'moped', '2.0.4', git: 'https://github.com/wandenberg/moped.git', branch: 'operation_timeout'
-gem 'mongoid'
+gem 'mongoid', '~> 6.0.0.rc0'
 gem 'ng-rails-csrf'
 gem 'nokogiri'
 gem 'oauth', git: 'https://github.com/venturit/oauth-ruby.git', branch: 'master'
@@ -107,7 +106,6 @@ gem 'uglifier'
 gem 'underscore-rails'
 gem 'whenever'
 gem 'newrelic_rpm'
-gem 'sinatra', '1.0' # pinned at 1.0 because we need rack 2.0
 gem 'wysiwyg-rails'
 gem 'ruby-saml', '~> 1.0.0'
 
