@@ -11,8 +11,6 @@ gem 'acts_as_list'
 gem 'addressable'
 gem 'angularjs-rails', '~> 1.4.2'
 gem 'angular-rails-templates'
-gem 'tilt', '~> 1.4.1' # needed for Sinatra 1.0
-gem 'sinatra', '1.0' # pinned at 1.0 because we need rack 2.0
 
 # zip utility for simple creation of zip files, pure ruby implementation
 # without the GC overhead of the Rubyzip library
@@ -109,6 +107,7 @@ gem 'uglifier'
 gem 'underscore-rails'
 gem 'whenever'
 gem 'newrelic_rpm'
+gem 'sinatra', '1.0' # pinned at 1.0 because we need rack 2.0
 gem 'wysiwyg-rails'
 gem 'ruby-saml', '~> 1.0.0'
 
