@@ -26,11 +26,6 @@ Rails.application.configure do
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.log_level = :debug
   config.session_store :cookie_store, key: "_gradecraft_session"
-  config.after_initialize do
-    Bullet.enable = true
-    Bullet.bullet_logger = true
-    Bullet.console = true
-  end
 end
 
 CarrierWave.configure do |config|

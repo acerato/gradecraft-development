@@ -114,7 +114,6 @@ group :development do
   gem 'valid_attribute'
   gem 'foreman'
   gem 'rubystats'
-  gem 'bullet'
 end
 
 group :development, :test do
