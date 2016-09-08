@@ -108,7 +108,7 @@ describe Assignments::GradesController do
 
     describe "PUT mass_update" do
       let(:grades_attributes) do
-        { "#{@assignment.reload.grades.index(@grade)}" =>
+        { "#{@assignment.reload.grades.to_a.index(@grade)}" =>
           { graded_by_id: @professor.id, instructor_modified: true,
             student_id: @grade.student_id, raw_points: 1000, status: "Graded",
             id: @grade.id
