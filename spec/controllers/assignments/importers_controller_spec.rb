@@ -43,7 +43,7 @@ describe Assignments::ImportersController do
 
     context "as a professor" do
       let(:access_token) { "BLAH" }
-      let(:assignment_ids) { [{ "name" => "Assignment 1" }] }
+      let(:assignment_ids) { ["123", "456"] }
       let(:assignment_type) { create :assignment_type }
       let(:result) { double(:result, success?: true, message: "") }
       let!(:user_authorization) do
