@@ -51,7 +51,7 @@ describe Challenges::ChallengeGradesController do
 
     describe "POST mass_update" do
       it "updates the challenge grades for the specific challenge" do
-        challenge_grades_attributes = { "#{challenge.challenge_grades.index(@challenge_grade)}" =>
+        challenge_grades_attributes = { "#{challenge.challenge_grades.to_a.index(@challenge_grade)}" =>
           { team_id: team.id, score: 1000, status: "Released",
             id: @challenge_grade.id
           }
@@ -62,7 +62,7 @@ describe Challenges::ChallengeGradesController do
       end
 
       it "redirects to the mass_edit form if attributes are invalid" do
-        challenge_grades_attributes = { "#{challenge.challenge_grades.index(@challenge_grade)}" =>
+        challenge_grades_attributes = { "#{challenge.challenge_grades.to_a.index(@challenge_grade)}" =>
           { team_id: nil, score: 1000, status: "Released",
             id: @challenge_grade.id
           }
