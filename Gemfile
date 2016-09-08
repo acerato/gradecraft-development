@@ -134,7 +134,7 @@ group :test do
   gem 'factory_girl_rails', '~> 4.5.0'
   gem 'capybara-select2'
   gem 'launchy'
-  gem 'rspec-rails', '3.5.0.beta3'
+  gem 'rspec-rails', '~> 3.5.2'
   # add spec helpers for testing Resque objects and resque scheduler
   gem 'resque_spec', github: 'leshill/resque_spec'
   gem 'rspec-html-matchers'
