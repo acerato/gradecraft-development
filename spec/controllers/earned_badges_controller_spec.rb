@@ -127,14 +127,6 @@ describe EarnedBadgesController do
           end
           controller.instance_eval { send_earned_badge_notifications }
         end
-
-        it "should record the notification in the environment log" do
-          @earned_badges.each do |earned_badge|
-            earned_badge_notification_message = "Sent an earned badge notification for EarnedBadge ##{earned_badge[:id]}"
-            expect(controller.logger).to receive(:info).with(earned_badge_notification_message)
-          end
-          controller.instance_eval { send_earned_badge_notifications }
-        end
       end
 
       context "no earned badges" do
