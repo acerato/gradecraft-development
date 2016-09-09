@@ -16,6 +16,7 @@ describe API::LevelsController do
 
       it "updates the level attributes" do
         put :update, params, format: :json
+        puts level.reload.meets_expectations.inspect
         expect(level.reload.meets_expectations).to be_truthy
         expect(level.description).to eq("You have reached a new level")
       end
