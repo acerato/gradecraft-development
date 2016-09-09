@@ -72,6 +72,8 @@ describe SubmissionFilesController do
           submission: submission,
           submission_file: submission_file
         )
+
+        request.env["HTTP_REFERER"] = "http://some-referrer.com"
       end
 
       context "user is authorized to download the submission" do
@@ -93,7 +95,6 @@ describe SubmissionFilesController do
         context "the submission file is not streamable" do
           before do
             allow(presenter).to receive(:submission_file_streamable?) { false }
-            allow(request).to receive(:referrer) { "http://some-referrer.com" }
           end
 
           it "marks the submission_file_missing" do
