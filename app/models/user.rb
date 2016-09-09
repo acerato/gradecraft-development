@@ -410,7 +410,7 @@ class User < ActiveRecord::Base
   def earnable_course_badges_for_grade(grade)
     Badge
       .where(course_id: grade[:course_id])
-      .where(final_earnable_course_badges_sql(grade))
+      .merge(earnable_course_badges(grade))
   end
 
   # this should be all badges that:
@@ -470,16 +470,12 @@ class User < ActiveRecord::Base
 
   private
 
-  def earnable_course_badges_sql_conditions(grade)
+  def earnable_course_badges(grade)
     Badge
       .unscoped
       .where("(id not in (select distinct(badge_id) from earned_badges where earned_badges.student_id = ? and earned_badges.course_id = ?))", self[:id], grade[:course_id])
-      .where("(id in (select distinct(badge_id) from earned_badges where earned_badges.student_id = ? and earned_badges.course_id = ?) and can_earn_multiple_times = ?)", self[:id], grade[:course_id], true)
-      .where("(id in (select distinct(badge_id) from earned_badges where earned_badges.student_id = ? and earned_badges.course_id = ? and earned_badges.grade_id = ?) and can_earn_multiple_times = ?)", self[:id], grade[:course_id], grade[:id], false)
-  end
-
-  def final_earnable_course_badges_sql(grade)
-    earnable_course_badges_sql_conditions(grade).where_values.join(" OR ")
+      .or(Badge.where("(id in (select distinct(badge_id) from earned_badges where earned_badges.student_id = ? and earned_badges.course_id = ?) and can_earn_multiple_times = ?)", self[:id], grade[:course_id], true))
+      .or(Badge.where("(id in (select distinct(badge_id) from earned_badges where earned_badges.student_id = ? and earned_badges.course_id = ? and earned_badges.grade_id = ?) and can_earn_multiple_times = ?)", self[:id], grade[:course_id], grade[:id], false))
   end
 
   def cache_last_login
