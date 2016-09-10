@@ -30,7 +30,6 @@ class Challenge < ActiveRecord::Base
   scope :visible, -> { where visible: TRUE }
   scope :chronological, -> { order("due_at ASC") }
   scope :alphabetical, -> { order("name ASC") }
-  scope :visible, -> { where visible: TRUE }
 
   validates_presence_of :course, :name
   validates_inclusion_of :visible, :accepts_submissions, :release_necessary,
