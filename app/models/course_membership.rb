@@ -53,7 +53,7 @@ class CourseMembership < ActiveRecord::Base
   end
 
   def check_and_update_student_earned_level
-    update_attribute :earned_grade_scheme_element_id, earned_grade_scheme_element.try(:id)
+    update_attributes earned_grade_scheme_element_id: earned_grade_scheme_element.try(:id)
   end
 
   def earned_grade_scheme_element
