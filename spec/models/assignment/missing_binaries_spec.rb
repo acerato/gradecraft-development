@@ -39,7 +39,8 @@ RSpec.describe "Assignment #missing_binaries methods" do
         let(:cache_submission_files) { missing_submission_file; present_submission_file; another_missing_submission_file }
 
         it "orders the submission files by create_at ASC" do
-          expect(subject.index(missing_submission_file)).to be < subject.index(another_missing_submission_file)
+          expect(subject.to_a.index(missing_submission_file)).to \
+            be < subject.to_a.index(another_missing_submission_file)
         end
       end
 
@@ -136,7 +137,8 @@ RSpec.describe "Assignment #missing_binaries methods" do
         let(:cache_team_memberships) { team_membership; another_team_membership }
 
         it "orders the submission files by create_at ASC" do
-          expect(subject.index(missing_submission_file)).to be < subject.index(another_missing_submission_file)
+          expect(subject.to_a.index(missing_submission_file)).to \
+            be < subject.to_a.index(another_missing_submission_file)
         end
       end
 
