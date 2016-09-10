@@ -267,7 +267,7 @@ class User < ActiveRecord::Base
   end
 
   def get_element_level(course, direction)
-    course_elements = course.grade_scheme_elements.order_by_lowest_points
+    course_elements = course.grade_scheme_elements.order_by_lowest_points.to_a
 
     current_element = self.grade_for_course(course)
     current_element_index = course_elements.index{ |item| item[:level] == current_element[:level] }
