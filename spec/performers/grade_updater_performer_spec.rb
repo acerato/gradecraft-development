@@ -101,6 +101,7 @@ RSpec.describe GradeUpdatePerformer, type: :background_job do
 
       context "@grade is student visible and grade assignment is set to notify on release" do
         before(:each) do
+          allow(performer).to receive(:notify_grade_released) { true }
           allow_any_instance_of(GradeProctor).to receive(:viewable?) { true }
         end
 
@@ -111,7 +112,6 @@ RSpec.describe GradeUpdatePerformer, type: :background_job do
         end
 
         it "should render the value of notify_grade_released" do
-          allow(performer).to receive(:notify_grade_released) { true }
           expect(performer).to receive(:require_success) { true }
           subject
         end
