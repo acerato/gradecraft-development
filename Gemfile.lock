@@ -497,6 +497,8 @@ GEM
       nokogiri (>= 1.4.1)
       trollop
     rdiscount (2.2.0.1)
+    record_tag_helper (1.0.0)
+      actionview (~> 5.x)
     redis (3.3.1)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
@@ -741,6 +743,7 @@ DEPENDENCIES
   rails_email_preview (~> 0.2.29)
   rake-hooks
   rdiscount
+  record_tag_helper
   responders
   resque (= 1.26)
   resque-retry

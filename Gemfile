@@ -74,6 +74,7 @@ gem 'rack-mini-profiler', require: false
 gem 'rails_autolink'
 gem 'rails_email_preview', '~> 0.2.29'
 gem 'rdiscount'
+gem 'record_tag_helper'
 
 # retry dsl for resque
 gem 'resque-retry'
