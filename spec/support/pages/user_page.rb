@@ -17,7 +17,7 @@ class UserPage
 
     courses = fields[:courses]
     courses.each_with_index do |course, index|
-      destroyed = find(:xpath, ".//input[@id='user_course_memberships_attributes_#{index}__destroy']")
+      destroyed = find(:xpath, ".//input[@id='user_course_memberships_attributes_#{index}__destroy']", visible: false)
       if destroyed.value == "true"
         destroyed.set false
       else
