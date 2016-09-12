@@ -31,8 +31,5 @@ module GradeCraft
         request_specs: false
       g.fixture_replacement :factory_girl, dir: "spec/factories"
     end
-
-    #http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#error-handling-in-transaction-callbacks
-    config.active_record.raise_in_transactional_callbacks = true
   end
 end

@@ -27,7 +27,6 @@ Rails.application.configure do
   config.log_formatter = ::Logger::Formatter.new
   config.log_level = :debug
   config.log_tags = [:request_id]
-  config.serve_static_files = false
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
   config.session_store :active_record_store, :expire_after => 60.minutes
 end

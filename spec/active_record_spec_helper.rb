@@ -50,10 +50,6 @@ SorceryStubbing.sorcery_reset [:user_activation], user_activation_mailer: Sorcer
 connection_info = YAML.load_file("config/database.yml")["test"]
 ActiveRecord::Base.establish_connection(connection_info)
 
-# supress the warning that is generated from CarrierWave because it uses
-# after_commit/after_save callbacks
-ActiveRecord::Base.raise_in_transactional_callbacks = true
-
 require "paper_trail"
 require "paper_trail/frameworks/rspec"
 
