@@ -6,14 +6,12 @@ describe "info/earned_badges" do
 
   before(:all) do
     @course = create(:course)
-    @student_1 = create(:user)
-    @student_2 = create(:user)
-    @course.students << [@student_1, @student_2]
+    @student_1 = create(:student_course_membership, course: @course).user
+    @student_2 = create(:student_course_membership, course: @course).user
     @students = @course.students
 
     @badge_1 = create(:badge, course: @course)
     @badge_2 = create(:badge, course: @course)
-    @course.badges << [@badge_1, @badge_2]
     @badges = @course.badges
   end
 

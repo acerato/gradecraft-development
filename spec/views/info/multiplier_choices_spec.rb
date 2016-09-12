@@ -6,14 +6,12 @@ describe "info/multiplier_choices" do
 
   before(:all) do
     @course = create(:course)
-    @student_1 = create(:user)
-    @student_2 = create(:user)
-    @course.students <<[@user_1, @user_2]
+    @student_1 = create(:student_course_membership, course: @course).user
+    @student_2 = create(:student_course_membership, course: @course).user
     @students = @course.students
 
     @assignment_type_1 = create(:assignment_type, course: @course)
     @assignment_type_2 = create(:assignment_type, course: @course)
-    @course.assignment_types << [@assignment_type_1, @assignment_type_2]
     @assignment_types = @course.assignment_types
   end
 

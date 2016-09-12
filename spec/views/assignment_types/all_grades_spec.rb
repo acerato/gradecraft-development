@@ -5,11 +5,9 @@ describe "assignment_types/all_grades" do
 
   before(:all) do
     @course = create(:course)
-    @assignment_type = create(:assignment_type)
-    @course.assignment_types << [@assignment_type]
-    @student_1 = create(:user)
-    @student_2 = create(:user)
-    @course.students << [@student_1, @student_2]
+    @assignment_type = create(:assignment_type, course: @course)
+    @student_1 = create(:student_course_membership, course: @course).user
+    @student_2 = create(:student_course_membership, course: @course).user
     @students = @course.students
   end
 
