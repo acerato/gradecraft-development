@@ -1,6 +1,6 @@
 class SubmissionsController < ApplicationController
-  before_filter :ensure_staff?, only: [:show, :destroy]
-  before_filter :save_referer, only: [:new, :edit]
+  before_action :ensure_staff?, only: [:show, :destroy]
+  before_action :save_referer, only: [:new, :edit]
 
   def show
     @submission = Submission.find(params[:id])

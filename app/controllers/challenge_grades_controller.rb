@@ -1,6 +1,6 @@
 class ChallengeGradesController < ApplicationController
 
-  before_filter :ensure_staff?, except: [:show]
+  before_action :ensure_staff?, except: [:show]
   before_action :find_challenge_grade
   before_action :find_challenge
 

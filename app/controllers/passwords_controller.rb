@@ -1,5 +1,5 @@
 class PasswordsController < ApplicationController
-  skip_before_filter :require_login
+  skip_before_action :require_login
 
   # rubocop:disable AndOr
   def new

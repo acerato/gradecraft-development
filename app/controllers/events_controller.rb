@@ -2,7 +2,7 @@ class EventsController < ApplicationController
 
   respond_to :html, :json
 
-  before_filter :ensure_staff?, except: [:show, :index]
+  before_action :ensure_staff?, except: [:show, :index]
 
   def index
     @events = current_course.events.order("due_at ASC")
@@ -46,7 +46,7 @@ class EventsController < ApplicationController
   private
 
   def event_params
-    params.require(:event).permit(:course_id, :name, :description, :open_at, 
+    params.require(:event).permit(:course_id, :name, :description, :open_at,
     :due_at, :media, :thumbnail, :media_credit, :media_caption)
   end
 end

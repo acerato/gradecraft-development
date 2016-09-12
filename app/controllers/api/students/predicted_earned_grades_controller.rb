@@ -1,6 +1,6 @@
 class API::Students::PredictedEarnedGradesController < ApplicationController
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET api/students/:student_id/predicted_earned_grades
   def index

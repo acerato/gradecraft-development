@@ -1,5 +1,5 @@
 class UploadsController < ApplicationController
-  before_filter :fetch_upload_with_model, only: :remove
+  before_action :fetch_upload_with_model, only: :remove
 
   def remove
     @upload.delete_from_s3

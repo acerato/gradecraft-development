@@ -1,5 +1,5 @@
 class Assignments::GroupsController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET /assignments/:assignment_id/groups/:id/grade
   # Grading an assignment for a whole group

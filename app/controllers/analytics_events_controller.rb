@@ -1,5 +1,5 @@
 class AnalyticsEventsController < ApplicationController
-  skip_before_filter :increment_page_views
+  skip_before_action :increment_page_views
 
   def predictor_event
     # limited to 5 predictor jobs/second in Resque initializer

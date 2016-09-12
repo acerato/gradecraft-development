@@ -1,7 +1,7 @@
 require_relative "../services/cancels_course_membership"
 
 class CourseMembershipsController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   def create
     @course_membership =

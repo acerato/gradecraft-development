@@ -1,7 +1,7 @@
 class Assignments::GradesController < ApplicationController
-  before_filter :ensure_staff?, except: :self_log
-  before_filter :ensure_student?, only: :self_log
-  before_filter :save_referer, only: :edit_status
+  before_action :ensure_staff?, except: :self_log
+  before_action :ensure_student?, only: :self_log
+  before_action :save_referer, only: :edit_status
 
   # GET /assignments/:assignment_id/grades/edit_status
   # For changing the status of a group of grades passed in grade_ids

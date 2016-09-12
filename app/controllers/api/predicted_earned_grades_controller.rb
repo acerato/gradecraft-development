@@ -1,7 +1,7 @@
 class API::PredictedEarnedGradesController < ApplicationController
   include PredictorData
 
-  before_filter :ensure_student?, only: [:update]
+  before_action :ensure_student?, only: [:update]
 
   # GET api/predicted_earned_grades
   def index

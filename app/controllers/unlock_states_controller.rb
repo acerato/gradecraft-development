@@ -2,8 +2,8 @@
 # necessary Unlock Conditions to be able to do whatever is locked
 class UnlockStatesController < ApplicationController
 
-  before_filter :ensure_staff?
-  before_filter :save_referer, only: [:manually_unlock]
+  before_action :ensure_staff?
+  before_action :save_referer, only: [:manually_unlock]
 
   def create
     @unlock_state = current_course.unlock_state.new(unlock_condition_params)

@@ -1,7 +1,7 @@
 class API::Students::AssignmentTypesController < ApplicationController
   include PredictorData
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET api/students/:student_id/assignment_types
   def index

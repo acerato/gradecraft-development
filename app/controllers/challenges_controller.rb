@@ -1,8 +1,8 @@
 class ChallengesController < ApplicationController
 
-  before_filter :ensure_staff?,
+  before_action :ensure_staff?,
     except: [:index, :show, :predictor_data, :predict_points]
-  before_filter :ensure_student?, only: [:predict_points]
+  before_action :ensure_student?, only: [:predict_points]
   before_action :find_challenge, only: [:show, :edit, :update, :destroy]
 
   def index

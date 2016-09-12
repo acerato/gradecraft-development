@@ -2,7 +2,7 @@ require_relative "../../services/creates_grade_using_rubric"
 require_relative "../../services/creates_group_grades_using_rubric"
 
 class API::CriterionGradesController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET api/assignments/:assignment_id/students/:student_id/criterion_grades
   def index

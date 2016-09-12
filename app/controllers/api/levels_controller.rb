@@ -1,6 +1,6 @@
 
 class API::LevelsController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # PUT api/level/:id
   def update

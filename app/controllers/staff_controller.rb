@@ -5,7 +5,7 @@ class StaffController < ApplicationController
 
   respond_to :html, :json
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   def index
     @staff = current_course.staff

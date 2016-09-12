@@ -1,6 +1,6 @@
 class Students::BadgesController < ApplicationController
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET /students/:id/badges
   # faculty view of student's badge index view

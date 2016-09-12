@@ -1,6 +1,6 @@
 class CurrentCoursesController < ApplicationController
-  skip_before_filter :verify_authenticity_token
-  before_filter :ensure_not_impersonating?, only: [:change]
+  skip_before_action :verify_authenticity_token
+  before_action :ensure_not_impersonating?, only: [:change]
 
   # Switch between enrolled courses
   def change

@@ -1,7 +1,7 @@
 class API::Students::PredictedEarnedChallengesController < ApplicationController
   include PredictorData
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET api/students/:student_id/predicted_earned_challenges
   def index

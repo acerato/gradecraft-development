@@ -1,5 +1,5 @@
 class CriteriaController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   before_action :find_criterion, only: [:update, :destroy]
 

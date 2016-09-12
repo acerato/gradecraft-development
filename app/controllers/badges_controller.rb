@@ -1,7 +1,7 @@
 class BadgesController < ApplicationController
   include SortsPosition
 
-  before_filter :ensure_staff?, except: [:index, :show]
+  before_action :ensure_staff?, except: [:index, :show]
   before_action :find_badge, only: [:show, :edit, :update, :destroy]
 
   # GET /badges
@@ -61,7 +61,7 @@ class BadgesController < ApplicationController
     redirect_to badges_path,
       notice: "#{@name} #{term_for :badge} successfully deleted"
   end
-  
+
   def export_structure
     course = current_user.courses.find_by(id: params[:id])
     respond_to do |format|

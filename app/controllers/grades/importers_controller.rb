@@ -6,13 +6,13 @@ class Grades::ImportersController < ApplicationController
 
   oauth_provider_param :importer_provider_id
 
-  before_filter :ensure_staff?
-  before_filter except: [:download, :index, :show, :upload] do |controller|
+  before_action :ensure_staff?
+  before_action except: [:download, :index, :show, :upload] do |controller|
     controller.redirect_path \
       assignment_grades_importer_courses_path(params[:assignment_id],
                                               params[:importer_provider_id])
   end
-  before_filter :require_authorization, except: [:download, :index, :show, :upload]
+  before_action :require_authorization, except: [:download, :index, :show, :upload]
 
   def assignments
     @assignment = Assignment.find params[:assignment_id]

@@ -1,6 +1,6 @@
 class AnalyticsController < ApplicationController
-  before_filter :ensure_staff?
-  before_filter :set_granularity_and_range
+  before_action :ensure_staff?
+  before_action :set_granularity_and_range
 
   def students
     @title = "#{term_for :student} Analytics"
@@ -12,11 +12,11 @@ class AnalyticsController < ApplicationController
   end
 
   def all_events
-    data = CourseEvent.data(@granularity, @range, 
+    data = CourseEvent.data(@granularity, @range,
       { course_id: current_course.id }, { event_type: "_all" })
     render json: MultiJson.dump(data)
   end
-  
+
   def role_events
     data = CourseRoleEvent.data(@granularity, @range, {
       course_id: current_course.id, role_group: params[:role_group]

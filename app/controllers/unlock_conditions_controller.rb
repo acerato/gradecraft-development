@@ -4,7 +4,7 @@
 # conditions
 
 class UnlockConditionsController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   def create
     @unlock_condition =

@@ -1,6 +1,6 @@
 class Students::AssignmentTypeWeightsController < ApplicationController
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET /students/:id/assignment_type_weights
   # faculty view of student's weights index view

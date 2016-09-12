@@ -1,8 +1,8 @@
 class StudentsController < ApplicationController
   respond_to :html, :json
 
-  before_filter :ensure_staff?
-  before_filter :save_referer, only: [:recalculate]
+  before_action :ensure_staff?
+  before_action :save_referer, only: [:recalculate]
 
   # Lists all students in the course,
   # broken out by those being graded and auditors

@@ -1,7 +1,7 @@
 class InfoController < ApplicationController
   helper_method :sort_column, :sort_direction, :predictions
 
-  before_filter :ensure_staff?, except: [:dashboard, :predictor, :timeline_events]
+  before_action :ensure_staff?, except: [:dashboard, :predictor, :timeline_events]
   before_action :find_team,
     only: [:earned_badges, :multiplier_choices]
   before_action :find_students,

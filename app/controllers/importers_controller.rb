@@ -1,8 +1,8 @@
 require_relative "../services/imports_lms_assignments"
 
 class ImportersController < ApplicationController
-  before_filter :ensure_staff?
-  before_filter :require_authorization, except: :index
+  before_action :ensure_staff?
+  before_action :require_authorization, except: :index
 
   # GET /importers
   def index

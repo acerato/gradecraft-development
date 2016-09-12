@@ -4,8 +4,8 @@ class EarnedBadgesController < ApplicationController
   # Earned badges are to badges what grades are to assignments - the record of
   # how what and how a student performed
 
-  skip_before_filter :require_login, only: [:confirm_earned]
-  before_filter :ensure_staff?, except: [:confirm_earned]
+  skip_before_action :require_login, only: [:confirm_earned]
+  before_action :ensure_staff?, except: [:confirm_earned]
   before_action :find_badge, except: [:confirm_earned]
   before_action :find_earned_badge, only: [:show, :edit, :update, :destroy ]
 
@@ -23,7 +23,7 @@ class EarnedBadgesController < ApplicationController
     @earned_badge = @badge.earned_badges.where(id: params[:id]).first
     if @earned_badge.present?
       render nothing: true, status: 200
-    else 
+    else
       redirect_to root_path
     end
   end

@@ -1,7 +1,7 @@
 require_relative "../presenters/downloads/base"
 
 class DownloadsController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   def index
     @title = "Downloads"

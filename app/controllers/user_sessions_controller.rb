@@ -1,8 +1,8 @@
 class UserSessionsController < ApplicationController
 
-  before_filter :ensure_staff?, only: [:impersonate_student]
-  skip_before_filter :require_login, except: [:index]
-  skip_before_filter :verify_authenticity_token, only: [:lti_create]
+  before_action :ensure_staff?, only: [:impersonate_student]
+  skip_before_action :require_login, except: [:index]
+  skip_before_action :verify_authenticity_token, only: [:lti_create]
 
   def new
     @user = User.new

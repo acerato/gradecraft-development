@@ -1,6 +1,6 @@
 class API::Grades::GradeFilesController < ApplicationController
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # POST /api/grades/:grade_id/grade_files
   def create

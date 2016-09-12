@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_filter :ensure_staff?, only: [:index, :destroy]
+  before_action :ensure_staff?, only: [:index, :destroy]
 
   before_action :find_group, only: [:show, :edit, :update, :destroy]
   before_action :find_group_assignments, only: [:new, :edit, :create, :update]

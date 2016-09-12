@@ -1,9 +1,10 @@
 class GradesController < ApplicationController
   respond_to :html, :json
-  before_filter :ensure_staff?,
+
+  before_action :ensure_staff?,
     except: [:feedback_read, :show, :async_update]
-  before_filter :ensure_student?, only: [:feedback_read]
-  before_filter :save_referer, only: :edit
+  before_action :ensure_student?, only: :feedback_read
+  before_action :save_referer, only: :edit
 
   protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format == "application/json" }
 

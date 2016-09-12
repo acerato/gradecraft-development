@@ -1,7 +1,7 @@
 # The Grade Scheme Elements define the point thresholds earned at which students
 # earn course wide levels and grades
 class GradeSchemeElementsController < ApplicationController
-  before_filter :ensure_staff?, except: [:index]
+  before_action :ensure_staff?, except: [:index]
 
   def index
     @grade_scheme_elements = current_course

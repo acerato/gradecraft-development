@@ -1,6 +1,6 @@
 class API::AssignmentTypeWeightsController < ApplicationController
 
-  before_filter :ensure_student?
+  before_action :ensure_student?
 
   # POST /api/assignment_types/:assignment_type_id/assignment_type_weights
   def create

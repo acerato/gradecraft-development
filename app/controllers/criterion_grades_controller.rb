@@ -1,5 +1,5 @@
 class CriterionGradesController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   before_action :find_criterion_grade, except: [:new, :create]
   after_action :respond_with_criterion_grade

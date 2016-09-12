@@ -1,9 +1,9 @@
 class SubmissionsExportsController < ApplicationController
-  before_filter :ensure_staff?, except: :secure_download
+  before_action :ensure_staff?, except: :secure_download
 
-  skip_before_filter :require_login, only: :secure_download
-  skip_before_filter :increment_page_views, only: :secure_download
-  skip_before_filter :course_scores, only: :secure_download
+  skip_before_action :require_login, only: :secure_download
+  skip_before_action :increment_page_views, only: :secure_download
+  skip_before_action :course_scores, only: :secure_download
 
   def create
     if create_submissions_export && submissions_export_job.enqueue

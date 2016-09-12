@@ -1,6 +1,6 @@
 class API::GradesController < ApplicationController
 
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   # GET api/assignments/:assignment_id/students/:student_id/grade
   def show

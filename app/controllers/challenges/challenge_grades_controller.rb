@@ -1,5 +1,5 @@
 class Challenges::ChallengeGradesController < ApplicationController
-  before_filter :ensure_staff?
+  before_action :ensure_staff?
 
   before_action :find_challenge
 

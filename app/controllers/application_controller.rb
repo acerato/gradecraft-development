@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   Rails.env.production? do
-    before_filter :check_url
+    before_action :check_url
   end
 
   def check_url
@@ -23,9 +23,9 @@ class ApplicationController < ActionController::Base
       request.fullpath if !/^www/.match(request.host)
   end
 
-  before_filter :require_login, except: [:not_authenticated]
-  before_filter :increment_page_views
-  before_filter :course_scores
+  before_action :require_login, except: [:not_authenticated]
+  before_action :increment_page_views
+  before_action :course_scores
 
   include ApplicationHelper
 

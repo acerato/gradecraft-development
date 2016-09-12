@@ -5,8 +5,8 @@ class AssignmentsController < ApplicationController
   include AssignmentsHelper
   include SortsPosition
 
-  before_filter :ensure_staff?, except: [:show, :index]
-  before_filter :sanitize_params, only: [:create, :update]
+  before_action :ensure_staff?, except: [:show, :index]
+  before_action :sanitize_params, only: [:create, :update]
 
   def index
     @assignment_types = current_course.assignment_types.ordered.includes(:assignments)
