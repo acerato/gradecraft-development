@@ -10,6 +10,8 @@ feature "viewing submission history" do
   let(:membership) { create :student_course_membership, user: student }
   let(:student) { create :user }
 
+  before { PaperTrail.enabled = true }
+
   context "as a professor" do
     let(:professor) { create :user }
     let!(:professor_membership) { create :professor_course_membership, user: professor, course: membership.course }
@@ -34,9 +36,7 @@ feature "viewing submission history" do
       PaperTrail.whodunnit = student.id
       submission.update_attributes link: "http://example.org"
       visit assignment_path assignment
-      find("a", text: "Submission History").click do
-        expect(page).to have_content "You changed the link to \"http://example.org\""
-      end
+      expect(page).to have_content "You changed the link to \"http://example.org\""
     end
   end
 end
