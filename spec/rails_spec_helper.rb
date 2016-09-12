@@ -41,6 +41,7 @@ require "rspec/rails"
 require "paper_trail"
 require "paper_trail/frameworks/rspec"
 require "capybara/rspec"
+require "rails-controller-testing"
 
 # ResqueSpec libraries
 require "resque_spec/scheduler" # allow resque spec to test scheduled jobs
@@ -78,6 +79,8 @@ RSpec.configure do |config|
 
   config.include FactoryGirl::Syntax::Methods
 
+  config.include ::Rails::Controller::Testing::TestProcess, type: :controller
+  config.include ::Rails::Controller::Testing::TemplateAssertions, type: :controller
   config.include Sorcery::TestHelpers::Rails::Controller, type: :controller
   config.include Sorcery::TestHelpers::Rails::Integration, type: :feature
   config.include GradeCraft::Matchers::Integration, type: :feature
