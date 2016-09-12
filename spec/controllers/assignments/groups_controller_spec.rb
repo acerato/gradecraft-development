@@ -25,7 +25,7 @@ describe Assignments::GroupsController do
         group = create(:group)
         @assignment.groups << group
         group.students << @student
-        get :grade, { assignment_id: @assignment.id, id: group.id }
+        get :grade, params: { assignment_id: @assignment.id, id: group.id }
         expect(assigns(:assignment)).to eq(@assignment)
         expect(assigns(:assignment_score_levels)).to \
           eq(@assignment.assignment_score_levels)
@@ -40,9 +40,9 @@ describe Assignments::GroupsController do
         @assignment.groups << group
         group.students << @student
         current_time = DateTime.now
-        put :graded, assignment_id: @assignment.id, id: group.id,
+        put :graded, params: { assignment_id: @assignment.id, id: group.id,
           grade: { graded_by_id: @professor.id, instructor_modified: true,
-                   raw_points: 1000, status: "Graded" }
+                   raw_points: 1000, status: "Graded" }}
         expect(@grade.reload.raw_points).to eq 1000
         expect(@grade.group_id).to eq(group.id)
         expect(@grade.graded_at).to be > current_time
@@ -62,15 +62,15 @@ describe Assignments::GroupsController do
 
     describe "GET grade" do
       it "redirects back to the root" do
-        expect(get :grade, { assignment_id: @assignment.id, id: group.id }).to \
+        expect(get :grade, params: { assignment_id: @assignment.id, id: group.id }).to \
           redirect_to(:root)
       end
     end
 
     describe "PUT graded" do
       it "redirects back to the root" do
-        expect(put :graded, assignment_id: @assignment.id, id: group.id,
-               grade: {}).to redirect_to(:root)
+        expect(put :graded, params: { assignment_id: @assignment.id, id: group.id,grade: {}}).to \
+          redirect_to(:root)
       end
     end
   end

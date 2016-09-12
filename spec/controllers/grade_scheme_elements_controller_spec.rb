@@ -27,7 +27,7 @@ describe GradeSchemeElementsController do
 
     describe "GET edit" do
       it "renders the edit grade scheme form" do
-        get :edit, id: @grade_scheme_element.id
+        get :edit, params: { id: @grade_scheme_element.id }
         expect(assigns(:grade_scheme_element)).to eq(@grade_scheme_element)
         expect(response).to render_template(:edit)
       end
@@ -36,7 +36,7 @@ describe GradeSchemeElementsController do
     describe "PUT update" do
       it "updates the grade scheme element" do
         grade_scheme_element_params = { letter: "B" }
-        put :update, { id: @grade_scheme_element.id, grade_scheme_element: grade_scheme_element_params }
+        put :update, params: { id: @grade_scheme_element.id, grade_scheme_element: grade_scheme_element_params }
         expect(@grade_scheme_element.reload.letter).to eq("B")
       end
     end
@@ -55,7 +55,7 @@ describe GradeSchemeElementsController do
           highest_points: 100000, course_id: @course.id }, { id: GradeSchemeElement.new.id,
           letter: "B", level: "Snail", lowest_points: 100001, highest_points: 200000,
           course_id: @course.id }], "deleted_ids"=>nil, "grade_scheme_element"=>{} }
-        put :mass_update, params.merge(format: :json)
+        put :mass_update, params: params.merge(format: :json)
         expect(@course.reload.grade_scheme_elements.count).to eq(2)
         expect(@grade_scheme_element.reload.level).to eq("Sea Slug")
       end
@@ -67,7 +67,7 @@ describe GradeSchemeElementsController do
           highest_points: 100010, course_id: @course.id }, { id: GradeSchemeElement.new.id,
           letter: "B", level: "Snail", lowest_points: 100011, highest_points: nil,
           course_id: @course.id}], "deleted_ids"=>nil, "grade_scheme_element"=>{} }
-        put :mass_update, params.merge(format: :json)
+        put :mass_update, params: params.merge(format: :json)
         expect(@grade_scheme_element.reload.highest_points).to eq(100000)
         expect(response.status).to eq(500)
       end
@@ -75,7 +75,7 @@ describe GradeSchemeElementsController do
 
     describe "GET export_structure" do
       it "retrieves the export_structure download" do
-        get :export_structure, id: @course.id, format: :csv
+        get :export_structure, params: { id: @course.id }, format: :csv
         expect(response.body).to include("Level ID,Letter Grade,Level Name,Lowest Points,Highest Points")
       end
     end

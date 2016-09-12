@@ -10,7 +10,7 @@ class UploadsController < ApplicationController
       destroy_upload_with_flash
     end
 
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   protected

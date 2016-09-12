@@ -12,12 +12,12 @@ describe PasswordsController do
     let(:user) { create :user }
 
     it "creates a password reset token for the user" do
-      post :create, email: user.email
+      post :create, params: { email: user.email }
       expect(user.reload.reset_password_token).to_not be_nil
     end
 
     it "sends the user an email with password reset instructions" do
-      expect { post :create, email: user.email.upcase }.to \
+      expect { post :create, params: { email: user.email.upcase }}.to \
         change { ActionMailer::Base.deliveries.count }.by 1
       expect(response).to redirect_to root_path
     end
@@ -27,18 +27,18 @@ describe PasswordsController do
     let(:user) { create :user, reset_password_token: "blah" }
 
     it "exists" do
-      get :edit, id: user.reset_password_token
+      get :edit, params: { id: user.reset_password_token }
       expect(response).to be_success
     end
 
     it "redirects to the password reset url if the token is not correct" do
-      get :edit, id: "blech"
+      get :edit, params: { id: "blech" }
       expect(response).to redirect_to new_password_path
     end
 
     it "redirects to the password reset url if the token has expired" do
       user.update_attribute :reset_password_token_expires_at, 1.hour.ago
-      get :edit, id: user.reset_password_token
+      get :edit, params: { id: user.reset_password_token }
       expect(response).to redirect_to new_password_path
     end
   end
@@ -48,33 +48,33 @@ describe PasswordsController do
 
     context "with matching passwords" do
       it "changes the user's password" do
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: user.reset_password_token,
-          user: { password: "blah", password_confirmation: "blah" }
+          user: { password: "blah", password_confirmation: "blah" }}
         expect(User.authenticate(user.email, "blah")).to eq user
       end
 
       it "activates the user if they are not activated" do
         user.update_attribute(:activation_state, "pending")
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: user.reset_password_token,
-          user: { password: "blah", password_confirmation: "blah" }
+          user: { password: "blah", password_confirmation: "blah" }}
         expect(user.reload).to be_activated
       end
 
       it "logs the user in" do
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: user.reset_password_token,
-          user: { password: "blah", password_confirmation: "blah" }
+          user: { password: "blah", password_confirmation: "blah" }}
         expect(response).to redirect_to dashboard_path
       end
     end
 
     context "with a tampered password reset token" do
       before do
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: "tampered",
-          user: { password: "blah", password_confirmation: "blah" }
+          user: { password: "blah", password_confirmation: "blah" }}
       end
 
       it "does not change the user's password" do
@@ -88,9 +88,9 @@ describe PasswordsController do
 
     context "with non-matching password" do
       before do
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: user.reset_password_token,
-          user: { password: "blah", password_confirmation: "blech" }
+          user: { password: "blah", password_confirmation: "blech" }}
       end
 
       it "does not change the user's password" do
@@ -104,9 +104,9 @@ describe PasswordsController do
 
     context "with a blank password" do
       before do
-        put :update, id: user.reset_password_token,
+        put :update, params: { id: user.reset_password_token,
           token: user.reset_password_token,
-          user: { password: "", password_confirmation: "" }
+          user: { password: "", password_confirmation: "" }}
       end
 
       it "does not change the user's password" do

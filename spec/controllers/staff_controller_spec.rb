@@ -24,7 +24,7 @@ describe StaffController do
 
     describe "GET show" do
       it "displays a single staff member's page" do
-        get :show, id: @professor.id
+        get :show, params: { id: @professor.id }
         expect(assigns(:staff_member)).to eq(@professor)
         expect(response).to render_template(:show)
       end
@@ -53,7 +53,7 @@ describe StaffController do
         :show
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {id: "1"}).to redirect_to(:root)
+          expect(get route, params: { id: "1" }).to redirect_to(:root)
         end
       end
     end

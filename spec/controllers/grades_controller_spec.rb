@@ -41,9 +41,9 @@ describe GradesController do
           group.assignments << assignment
           group.students << @student
         end
-        
+
         it "renders the template" do
-          get :show, id: grade.id
+          get :show, params: { id: grade.id }
           expect(response).to render_template(:show)
         end
       end
@@ -51,7 +51,7 @@ describe GradesController do
 
     describe "GET edit" do
       it "assigns grade parameters and renders edit" do
-        get :edit, { id: @grade.id }
+        get :edit, params: { id: @grade.id }
         expect(assigns(:grade)).to eq(@grade)
         expect(response).to render_template(:edit)
       end
@@ -61,7 +61,7 @@ describe GradesController do
           submission = create(:submission, student: @student, assignment: @assignment)
           badge = create(:badge, course: @course)
 
-          get :edit, { id: @grade.id }
+          get :edit, params: { id: @grade.id }
           expect(assigns(:submission)).to eq(submission)
           expect(assigns(:badges)).to eq([badge])
         end
@@ -70,21 +70,21 @@ describe GradesController do
 
     describe "PUT update" do
       it "updates the grade" do
-        put :update, { id: @grade.id, grade: { raw_points: 12345 }}
+        put :update, params: { id: @grade.id, grade: { raw_points: 12345 }}
         expect(@grade.reload.score).to eq(12345)
         expect(response).to redirect_to(assignment_path(@grade.assignment))
       end
 
       it "timestamps the grade" do
         current_time = DateTime.now
-        put :update, { id: @grade.id, grade: { raw_points: 12345 }}
+        put :update, params: { id: @grade.id, grade: { raw_points: 12345 }}
         expect(@grade.reload.graded_at).to be > current_time
       end
 
       it "attaches the student submission" do
         submission = create :submission, assignment: @assignment, student: @student
         grade_params = { raw_points: 12345, submission_id: submission.id }
-        put :update, { id: @grade.id, grade: grade_params }
+        put :update, params: { id: @grade.id, grade: grade_params }
         grade = Grade.last
         expect(grade.submission).to eq submission
       end
@@ -93,23 +93,23 @@ describe GradesController do
         grade_params = { raw_points: 12345, "grade_files_attributes" => {"0" => {
           "file" => [fixture_file("test_file.txt", "txt")] }}}
 
-        put :update, { id: @grade.id, grade: grade_params}
+        put :update, params: { id: @grade.id, grade: grade_params}
         expect expect(GradeFile.count).to eq(1)
         expect expect(GradeFile.last.filename).to eq("test_file.txt")
       end
 
       it "handles commas in raw score params" do
-        put :update, { id: @grade.id, grade: { raw_points: "12,345" }}
+        put :update, params: { id: @grade.id, grade: { raw_points: "12,345" }}
         expect(@grade.reload.score).to eq(12345)
       end
 
       it "handles reverting nil raw score" do
-        put :update, { id: @grade.id, grade: { raw_points: nil }}
+        put :update, params: { id: @grade.id, grade: { raw_points: nil }}
         expect(@grade.reload.score).to eq(nil)
       end
 
       it "reverts empty raw score to nil, not zero" do
-        put :update, { id: @grade.id, grade: { raw_points: "" }}
+        put :update, params: { id: @grade.id, grade: { raw_points: "" }}
         expect(@grade.reload.score).to eq(nil)
       end
 
@@ -122,7 +122,7 @@ describe GradesController do
 
         it "creates and redirects to grade the next ungraded student when not accepting submissions" do
           @assignment.update(accepts_submissions: false)
-          put :update, { id: @grade.id, grade: { raw_points: 12345, status: "Graded"}, redirect_to_next_grade: true}
+          put :update, params: { id: @grade.id, grade: { raw_points: 12345, status: "Graded"}, redirect_to_next_grade: true}
           expect(response).to redirect_to(edit_grade_path(
             Grade.where(
               student: @next_student,
@@ -133,7 +133,7 @@ describe GradesController do
         it "creates and redirects to grade the next student with submission" do
           create :submission, assignment: @assignment, student: @student
           create :submission, assignment: @assignment, student: @next_student
-          put :update, { id: @grade.id, grade: { raw_points: 12345 }, redirect_to_next_grade: true}
+          put :update, params: { id: @grade.id, grade: { raw_points: 12345 }, redirect_to_next_grade: true}
           expect(response).to redirect_to(edit_grade_path(
             Grade.where(
               student: @next_student,
@@ -144,7 +144,7 @@ describe GradesController do
 
       it "redirects on failure" do
         allow_any_instance_of(Grade).to receive(:update_attributes).and_return false
-        put :update, { id: @grade.id, grade: { full_points: 100 }}
+        put :update, params: { id: @grade.id, grade: { full_points: 100 }}
         expect(response).to redirect_to(edit_grade_path(@grade))
       end
     end
@@ -157,20 +157,20 @@ describe GradesController do
 
       it "returns an error message on failure" do
         allow_any_instance_of(Grade).to receive(:save).and_return false
-        post :remove, { id: @grade.id, grade: { full_points: 13 }}
+        post :remove, params: { id: @grade.id, grade: { full_points: 13 }}
         expect(response.status).to eq(400)
       end
 
       it "preserves the grade but removes any indication that it was graded" do
         expect_any_instance_of(Grade).to receive(:clear_grade!).and_call_original
 
-        post :remove, { id: @grade.id }
+        post :remove, params: { id: @grade.id }
       end
 
       it "recalculates the grade's score" do
         expect(controller).to receive(:score_recalculator).with(@grade.student)
 
-        post :remove, { id: @grade.id }
+        post :remove, params: { id: @grade.id }
       end
     end
 
@@ -192,7 +192,7 @@ describe GradesController do
           graded_at: DateTime.now,
           status: "Graded"
         )
-        post :exclude, { id: @grade }
+        post :exclude, params: { id: @grade }
 
         @grade.reload
         expect(@grade.excluded_from_course_score).to eq(true)
@@ -202,7 +202,7 @@ describe GradesController do
 
       it "adds exclusion metadata" do
         current_time = DateTime.now
-        post :exclude, { id: @grade }
+        post :exclude, params: { id: @grade }
 
         @grade.reload
         expect(@grade.excluded_at).to be > current_time
@@ -211,7 +211,7 @@ describe GradesController do
 
       it "returns an error message on failure" do
         allow_any_instance_of(Grade).to receive(:save).and_return false
-        post :exclude, { id: @grade }
+        post :exclude, params: { id: @grade }
         expect(flash[:alert]).to include("grade was not successfully excluded")
       end
     end
@@ -230,7 +230,7 @@ describe GradesController do
           excluded_by_id: 2,
           excluded_at: Time.now
         )
-        post :include, { id: @grade }
+        post :include, params: { id: @grade }
 
         @grade.reload
         expect(@grade.excluded_from_course_score).to eq(false)
@@ -242,28 +242,28 @@ describe GradesController do
 
       it "returns an error message on failure" do
         allow_any_instance_of(Grade).to receive(:save).and_return false
-        post :include, { id: @grade }
+        post :include, params: { id: @grade }
         expect(flash[:alert]).to include("grade was not successfully re-added")
       end
     end
 
     describe "DELETE destroy" do
       it "removes the grade entirely" do
-        expect{ delete :destroy, { id: @grade.id }}.to \
+        expect{ delete :destroy, params: { id: @grade.id }}.to \
           change{Grade.count}.by(-1)
       end
 
       it "redirects to the assignments if the professor does not have access" do
         allow_any_instance_of(GradeProctor).to \
           receive(:destroyable?).and_return false
-        expect(delete :destroy, { id: @grade.id }).to \
+        expect(delete :destroy, params: { id: @grade.id }).to \
           redirect_to(assignment_path(@grade.assignment))
       end
     end
 
     describe "POST feedback_read" do
       it "should be protected and redirect to root" do
-        expect(post :feedback_read, id: @grade.id).to redirect_to(:root)
+        expect(post :feedback_read, params: { id: @grade.id }).to redirect_to(:root)
       end
     end
   end
@@ -279,14 +279,14 @@ describe GradesController do
 
     describe "GET show" do
       it "redirects to the assignment show page" do
-        get :show, id: @grade.id
+        get :show, params: { id: @grade.id }
         expect(response).to redirect_to(assignment_path(@assignment))
       end
     end
 
     describe "POST feedback_read" do
       it "marks the grade as read by the student" do
-        post :feedback_read, id: @grade.id
+        post :feedback_read, params: { id: @grade.id }
         expect(@grade.reload.feedback_read).to be_truthy
         expect(@grade.feedback_read_at).to be_within(1.second).of(Time.now)
         expect(response).to redirect_to assignment_path(@assignment)
@@ -300,10 +300,10 @@ describe GradesController do
       end
 
       it "all redirect to root" do
-        [ Proc.new { get :edit, {id: @grade.id }},
-          Proc.new { get :update, { id: @grade.id }},
-          Proc.new { get :remove, { id: @assignment.id, grade_id: @grade.id }},
-          Proc.new { delete :destroy, { id: @grade.id }},
+        [ Proc.new { get :edit, params: { id: @grade.id }},
+          Proc.new { get :update, params: { id: @grade.id }},
+          Proc.new { get :remove, params: { id: @assignment.id, grade_id: @grade.id }},
+          Proc.new { delete :destroy, params: { id: @grade.id }},
         ].each do |protected_route|
           expect(protected_route.call).to redirect_to(:root)
         end

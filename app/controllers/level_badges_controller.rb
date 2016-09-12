@@ -8,7 +8,7 @@ class LevelBadgesController< ApplicationController
 
   def destroy
     LevelBadge.find(params[:id]).destroy
-    render nothing: true
+    render head: :ok, body: nil
   end
 
   private

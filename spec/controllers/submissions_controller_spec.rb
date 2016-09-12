@@ -31,7 +31,7 @@ describe SubmissionsController do
     end
 
     describe "GET show" do
-      let(:make_request) { get :show, id: submission.id, assignment_id: submission.assignment_id }
+      let(:make_request) { get :show, params: { id: submission.id, assignment_id: submission.assignment_id }}
       let(:presenter_class) { Submissions::ShowPresenter }
 
       before do
@@ -62,7 +62,7 @@ describe SubmissionsController do
     end
 
     describe "GET new" do
-      let(:make_request) { get :new, assignment_id: submission.assignment_id }
+      let(:make_request) { get :new, params: { assignment_id: submission.assignment_id }}
       let(:presenter_class) { Submissions::NewPresenter }
 
       it "returns the submission new page" do
@@ -73,7 +73,7 @@ describe SubmissionsController do
 
     describe "GET edit" do
       it "display the edit form" do
-        get :edit, {id: @submission.id, assignment_id: @assignment.id}
+        get :edit, params: { id: @submission.id, assignment_id: @assignment.id }
         expect(response).to render_template(:edit)
       end
     end
@@ -81,13 +81,13 @@ describe SubmissionsController do
     describe "POST create" do
       it "creates the submission with valid attributes"  do
         params = attributes_for(:submission).merge(student_id: @student.id)
-        expect{ post :create, assignment_id: @assignment.id, submission: params }.to change(Submission,:count).by(1)
+        expect{ post :create, params: { assignment_id: @assignment.id, submission: params }}.to change(Submission,:count).by(1)
       end
 
       it "manages submission file uploads" do
         params = attributes_for(:submission).merge(student_id: @student.id)
         params.merge! submission_files_attributes: {"0" => {file: [fixture_file("test_file.txt", "txt")]}}
-        post :create, assignment_id: @assignment.id, submission: params
+        post :create, params: { assignment_id: @assignment.id, submission: params }
         submission = Submission.unscoped.last
         expect(submission.submission_files.count).to eq 1
         expect(submission.submission_files[0].filename).to eq "test_file.txt"
@@ -98,7 +98,7 @@ describe SubmissionsController do
         file = fixture_file("test_file.txt", "txt")
         allow_any_instance_of(AttachmentUploader).to receive(:size).and_return 50_000_000
         params.merge! submission_files_attributes: {"0" => {file: [file]}}
-        post :create, assignment_id: @assignment.id, submission: params
+        post :create, params: { assignment_id: @assignment.id, submission: params }
         expect(response).to render_template :new
       end
 
@@ -114,7 +114,7 @@ describe SubmissionsController do
         params = attributes_for(:submission)
         params[:assignment_id] = @assignment.id
         params[:text_comment] = "Ausgezeichnet"
-        post :update, assignment_id: @assignment.id, id: @submission, submission: params
+        post :update, params: { assignment_id: @assignment.id, id: @submission, submission: params }
         expect(response).to redirect_to(assignment_submission_path(@assignment, @submission, student_id: @student.id))
         expect(@submission.reload.text_comment).to eq("Ausgezeichnet")
       end
@@ -128,7 +128,7 @@ describe SubmissionsController do
 
     describe "GET destroy" do
       it "destroys the submission" do
-        expect{ get :destroy, {id: @submission, assignment_id: @assignment.id } }.to change(Submission,:count).by(-1)
+        expect{ get :destroy, params: { id: @submission, assignment_id: @assignment.id } }.to change(Submission,:count).by(-1)
       end
     end
   end
@@ -142,7 +142,7 @@ describe SubmissionsController do
 
     describe "GET edit" do
       it "shows the edit submission form" do
-        get :edit, {id: @submission.id, assignment_id: @assignment.id}
+        get :edit, params: { id: @submission.id, assignment_id: @assignment.id }
         expect(response).to render_template(:edit)
       end
     end
@@ -151,7 +151,7 @@ describe SubmissionsController do
       it "creates the submission with valid attributes" do
         params = attributes_for(:submission, student_id: @student.id)
           .merge(assignment_id: @assignment_id)
-        expect { post :create, assignment_id: @assignment.id, submission: params }.to \
+        expect { post :create, params: { assignment_id: @assignment.id, submission: params }}.to \
           change(Submission,:count).by(1)
       end
 
@@ -159,7 +159,7 @@ describe SubmissionsController do
         params = attributes_for(:submission, student_id: @student.id)
           .merge(assignment_id: @assignment_id)
         current_time = DateTime.now
-        post :create, assignment_id: @assignment.id, submission: params
+        post :create, params: { assignment_id: @assignment.id, submission: params }
         submission = Submission.unscoped.last
         expect(submission.submitted_at).to be > current_time
       end
@@ -176,7 +176,7 @@ describe SubmissionsController do
       it "updates the submission successfully"  do
         params = attributes_for(:submission).merge({ assignment_id: @assignment.id })
         params[:text_comment] = "Ausgezeichnet"
-        put :update, assignment_id: @assignment.id, id: @submission, submission: params
+        put :update, params: { assignment_id: @assignment.id, id: @submission, submission: params }
         expect(response).to redirect_to(assignment_path(@assignment, anchor: "tab3"))
         expect(@submission.reload.text_comment).to eq("Ausgezeichnet")
       end
@@ -185,7 +185,7 @@ describe SubmissionsController do
         params = attributes_for(:submission).merge({ assignment_id: @assignment.id })
         params[:text_comment] = "Ausgezeichnet"
         current_time = DateTime.now
-        put :update, assignment_id: @assignment.id, id: @submission, submission: params
+        put :update, params: { assignment_id: @assignment.id, id: @submission, submission: params }
         expect(@submission.reload.submitted_at).to be > current_time
       end
 
@@ -202,7 +202,7 @@ describe SubmissionsController do
         :destroy
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {assignment_id: 1, id: "1"}).to redirect_to(:root)
+          expect(get route, params: { assignment_id: 1, id: "1" }).to redirect_to(:root)
         end
       end
     end

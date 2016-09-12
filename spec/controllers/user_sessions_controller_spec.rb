@@ -10,7 +10,7 @@ describe UserSessionsController do
       it "records the course login event" do
         allow(subject).to receive(:login) { student }
         expect(subject).to receive(:record_course_login_event)
-        post :create, user: student.attributes
+        post :create, params: { user: student.attributes }
       end
     end
 
@@ -18,7 +18,7 @@ describe UserSessionsController do
       it "does not record the course login event" do
         allow(subject).to receive(:login) { nil }
         expect(subject).to_not receive(:record_course_login_event)
-        post :create, user: student.attributes
+        post :create, params: { user: student.attributes }
       end
     end
   end
@@ -30,13 +30,13 @@ describe UserSessionsController do
 
     it "stores the professor id in sessions" do
       login_user(professor)
-      get :impersonate_student, student_id: student.id
+      get :impersonate_student, params: { student_id: student.id }
       expect(session[:impersonating_agent_id]).to eq(professor.id)
     end
 
     it "logs in as student" do
       login_user(professor)
-      get :impersonate_student, student_id: student.id
+      get :impersonate_student, params: { student_id: student.id }
       expect(session[:user_id]).to eq(student.id.to_s)
     end
   end

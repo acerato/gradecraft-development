@@ -13,7 +13,7 @@ describe Students::AssignmentTypeWeightsController do
 
     describe "GET index" do
       it "returns badges for the current course" do
-        get :index, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }
         expect(assigns(:title)).to eq("Editing #{world.student.name}'s Multiplier Choices")
         expect(response).to render_template("assignment_type_weights/index")
       end

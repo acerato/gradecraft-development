@@ -25,14 +25,14 @@ describe EarnedBadgesController do
 
     describe "GET index" do
       it "redirects to the badge for the earned badge" do
-        get :index, badge_id: @badge.id
+        get :index, params: { badge_id: @badge.id }
         expect(response).to redirect_to(badge_path(@badge))
       end
     end
 
     describe "GET show" do
       it "returns the earned badge show page" do
-        get :show, { id: @earned_badge.id, badge_id: @badge.id }
+        get :show, params: { id: @earned_badge.id, badge_id: @badge.id }
         expect(assigns(:earned_badge)).to eq(@earned_badge)
         expect(response).to render_template(:show)
       end
@@ -40,7 +40,7 @@ describe EarnedBadgesController do
 
     describe "GET new" do
       it "display the create form" do
-        get :new, badge_id: @badge.id
+        get :new, params: { badge_id: @badge.id }
         expect(assigns(:earned_badge)).to be_a_new(EarnedBadge)
         expect(response).to render_template(:new)
       end
@@ -48,7 +48,7 @@ describe EarnedBadgesController do
 
     describe "GET edit" do
       it "displays the edit form" do
-        get :edit, {id: @earned_badge.id, badge_id: @badge.id}
+        get :edit, params: { id: @earned_badge.id, badge_id: @badge.id }
         expect(assigns(:earned_badge)).to eq(@earned_badge)
         expect(response).to render_template(:edit)
       end
@@ -56,19 +56,19 @@ describe EarnedBadgesController do
 
     describe "POST create" do
       it "creates the earned badge with valid attributes" do
-        expect{ post :create, badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
-                                              student_id: @student.id,
-                                              student_visible: true,
-                                              feedback: "You did great!" }}.to \
+        expect{ post :create, params: { badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
+                                        student_id: @student.id,
+                                        student_visible: true,
+                                        feedback: "You did great!" }}}.to \
           change(EarnedBadge.student_visible, :count).by(1)
         expect(response).to redirect_to badge_path(@badge)
       end
 
       it "doesn't create earned badges with invalid attributes" do
-        expect{ post :create, badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
-                                                          student_id: nil,
-                                                          student_visible: true,
-                                                          feedback: "You rock!" }}.to_not \
+        expect{ post :create, params: { badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
+                                        student_id: nil,
+                                        student_visible: true,
+                                        feedback: "You rock!" }}}.to_not \
           change(EarnedBadge,:count)
       end
     end
@@ -79,7 +79,7 @@ describe EarnedBadgesController do
         @student_ids = @students.collect(&:id)
       end
 
-      subject { post :mass_earn, badge_id: @badge[:id], student_ids: @student_ids }
+      subject { post :mass_earn, params: { badge_id: @badge[:id], student_ids: @student_ids }}
 
       context "earned badges are created" do
         before do
@@ -140,21 +140,21 @@ describe EarnedBadgesController do
     describe "POST update" do
       it "updates the earned badge" do
         params = { badge_id: @badge.id, student_id: @student.id, feedback: "great!" }
-        post :update, { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
+        post :update, params: { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
         expect(@earned_badge.reload.feedback).to eq("great!")
         expect(response).to redirect_to(badge_path(@badge))
       end
 
       it "renders the edit template if the update fails" do
         params = { badge_id: @badge.id, student_id: nil, feedback: "great!" }
-        post :update, { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
+        post :update, params: { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
         expect(response).to render_template(:edit)
       end
     end
 
     describe "GET mass_edit" do
       it "assigns params" do
-        get :mass_edit, badge_id: @badge.id
+        get :mass_edit, params: { badge_id: @badge.id }
         expect(assigns(:badge)).to eq(@badge)
         expect(assigns(:students)).to eq([@student])
         expect(response).to render_template(:mass_edit)
@@ -169,7 +169,7 @@ describe EarnedBadgesController do
           team = create(:team, course: @course)
           team.students << @student
 
-          get :mass_edit, badge_id: @badge.id, team_id: team.id
+          get :mass_edit, params: { badge_id: @badge.id, team_id: team.id }
           expect(assigns(:team)).to eq(team)
           expect(assigns(:students)).to eq([@student])
         end
@@ -181,7 +181,7 @@ describe EarnedBadgesController do
           other_student = create(:user)
           other_student.courses << @course
 
-          get :mass_edit, badge_id: @badge.id
+          get :mass_edit, params: { badge_id: @badge.id }
           expect(assigns(:students)).to include(@student)
           expect(assigns(:students)).to include(other_student)
         end
@@ -193,7 +193,7 @@ describe EarnedBadgesController do
           student2 = create(:user, last_name: "Alpha")
           student2.courses << @course
 
-          get :mass_edit, badge_id: @badge.id
+          get :mass_edit, params: { badge_id: @badge.id }
           expect(assigns(:earned_badges).count).to eq(2)
           expect(assigns(:earned_badges)[0].student_id).to eq(student2.id)
           expect(assigns(:earned_badges)[1].student_id).to eq(@student.id)
@@ -206,7 +206,7 @@ describe EarnedBadgesController do
           @badge.can_earn_multiple_times = false
           @badge.save
 
-          get :mass_edit, badge_id: @badge.id
+          get :mass_edit, params: { badge_id: @badge.id }
           expect(assigns(:earned_badges)).to eq([@earned_badge])
           expect(response).to render_template(:mass_edit)
         end
@@ -215,7 +215,7 @@ describe EarnedBadgesController do
 
     describe "GET destroy" do
       it "destroys the earned badge" do
-        expect{ get :destroy, { id: @earned_badge, badge_id: @badge.id } }.to change(EarnedBadge,:count).by(-1)
+        expect{ get :destroy, params: { id: @earned_badge, badge_id: @badge.id } }.to change(EarnedBadge,:count).by(-1)
       end
     end
   end
@@ -230,7 +230,7 @@ describe EarnedBadgesController do
         :create
       ].each do |route|
           it "#{route} redirects to root" do
-            expect(get route, {badge_id: 1}).to redirect_to(:root)
+            expect(get route, params: { badge_id: 1 }).to redirect_to(:root)
           end
         end
     end
@@ -243,7 +243,7 @@ describe EarnedBadgesController do
         :destroy
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {badge_id: 1, id: "1"}).to redirect_to(:root)
+          expect(get route, params: { badge_id: 1, id: "1" }).to redirect_to(:root)
         end
       end
     end

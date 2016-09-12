@@ -17,7 +17,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   end
 
   describe "POST #create" do
-    subject { post :create, assignment_id: assignment.id, team_id: team.id }
+    subject { post :create, params: { assignment_id: assignment.id, team_id: team.id }}
 
     it "creates an submissions export" do
       expect(controller).to receive(:create_submissions_export)
@@ -49,7 +49,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    subject { delete :destroy, id: submissions_export.id }
+    subject { delete :destroy, params: { id: submissions_export.id }}
 
     before(:each) do
       allow(controller).to receive(:submissions_export) { submissions_export }
@@ -91,7 +91,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   end
 
   describe "GET #download" do
-    let(:result) { get :download, id: submissions_export.id }
+    let(:result) { get :download, params: { id: submissions_export.id }}
 
     it "streams the s3 object to the client" do
       expect(controller).to receive(:stream_file_from_s3)
@@ -119,7 +119,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
     let(:secure_token) { create(:secure_token, target: submissions_export) }
 
     describe "GET #secure_download" do
-      let(:result) { get :secure_download, secure_download_params }
+      let(:result) { get :secure_download, params: secure_download_params }
 
       before(:each) do
         allow(controller).to receive(:secure_download_authenticator)
@@ -166,7 +166,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
       end
 
       describe "skipped filters" do
-        let(:result) { get :secure_download, secure_download_params }
+        let(:result) { get :secure_download, params: secure_download_params }
 
         before do
           # since we just want to test filter skipping let's disregard the

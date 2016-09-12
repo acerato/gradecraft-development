@@ -15,7 +15,7 @@ RSpec.describe UploadsController do
   end
 
   describe "#remove" do
-    subject { get :remove, model: "SubmissionFile", upload_id: submission_file.id }
+    subject { get :remove, params: { model: "SubmissionFile", upload_id: submission_file.id }}
 
     it "fetches the upload" do
       controller.instance_variable_set(:@upload, submission_file)
@@ -140,7 +140,7 @@ RSpec.describe UploadsController do
 
     context ":model param is GradeFile" do
       let(:grade_file) { create(:grade_file) }
-      subject { get :remove, model: "GradeFile", upload_id: grade_file.id }
+      subject { get :remove, params: { model: "GradeFile", upload_id: grade_file.id }}
 
       it "returns a GradeFile object" do
         expect(assigns(:upload).class).to eq(GradeFile)
@@ -153,7 +153,7 @@ RSpec.describe UploadsController do
 
     context ":model param is ChallengeFile" do
       let(:challenge_file) { create(:challenge_file) }
-      subject { get :remove, model: "ChallengeFile", upload_id: challenge_file.id }
+      subject { get :remove, params: { model: "ChallengeFile", upload_id: challenge_file.id }}
 
       it "returns a ChallengeFile object" do
         expect(assigns(:upload).class).to eq(ChallengeFile)
@@ -166,7 +166,7 @@ RSpec.describe UploadsController do
 
     context ":model param is BadgeFile" do
       let(:badge_file) { create(:badge_file) }
-      subject { get :remove, model: "BadgeFile", upload_id: badge_file.id }
+      subject { get :remove, params: { model: "BadgeFile", upload_id: badge_file.id }}
 
       it "returns a BadgeFile object" do
         expect(assigns(:upload).class).to eq(BadgeFile)
@@ -179,7 +179,7 @@ RSpec.describe UploadsController do
 
     context ":model param is AssignmentFile" do
       let(:assignment_file) { create(:assignment_file) }
-      subject { get :remove, model: "AssignmentFile", upload_id: assignment_file.id }
+      subject { get :remove, params: { model: "AssignmentFile", upload_id: assignment_file.id }}
 
       it "returns a AssignmentFile object" do
         expect(assigns(:upload).class).to eq(AssignmentFile)

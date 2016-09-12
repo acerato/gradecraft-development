@@ -27,7 +27,7 @@ describe TeamsController do
 
     describe "GET show" do
       it "returns the team show page" do
-        get :show, id: @team.id
+        get :show, params: { id: @team.id }
         expect(assigns(:team)).to eq(@team)
         expect(response).to render_template(:show)
       end
@@ -43,7 +43,7 @@ describe TeamsController do
 
     describe "GET edit" do
       it "assigns name " do
-        get :edit, id: @team.id
+        get :edit, params: { id: @team.id }
         expect(assigns(:team)).to eq(@team)
         expect(response).to render_template(:edit)
       end
@@ -53,18 +53,18 @@ describe TeamsController do
       it "creates the team with valid attributes"  do
         params = attributes_for(:team)
         params[:id] = @team
-        expect{ post :create, team: params }.to change(Team,:count).by(1)
+        expect{ post :create, params: { team: params }}.to change(Team,:count).by(1)
       end
 
       it "redirects to new from with invalid attributes" do
-        expect{ post :create, team: attributes_for(:team, name: nil) }.to_not change(Team,:count)
+        expect{ post :create, params: { team: attributes_for(:team, name: nil) }}.to_not change(Team,:count)
       end
     end
 
     describe "POST update" do
       it "updates the team" do
         params = { name: "new name" }
-        post :update, id: @team.id, team: params
+        post :update, params: { id: @team.id, team: params }
         expect(response).to redirect_to(team_path(@team))
         expect(@team.reload.name).to eq("new name")
       end
@@ -72,7 +72,7 @@ describe TeamsController do
 
     describe "GET destroy" do
       it "destroys the team" do
-        expect{ get :destroy, id: @team }.to change(Team,:count).by(-1)
+        expect{ get :destroy, params: { id: @team }}.to change(Team,:count).by(-1)
       end
     end
   end
@@ -114,7 +114,7 @@ describe TeamsController do
         :destroy
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {id: "10"}).to redirect_to(:root)
+          expect(get route, params: { id: "10" }).to redirect_to(:root)
         end
       end
     end
