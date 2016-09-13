@@ -11,7 +11,7 @@ describe API::Students::AssignmentTypesController do
 
   describe "GET index" do
     it "returns assignment types as json with current student if id present" do
-      get :index, format: :json, student_id: world.student.id
+      get :index, params: { student_id: world.student.id }, format: :json
       expect(assigns(:student)).to eq(world.student)
       expect(assigns(:assignment_types)).to eq([assignment_type])
       expect(assigns(:update_weights)).to be_falsey

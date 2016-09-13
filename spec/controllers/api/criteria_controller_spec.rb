@@ -9,7 +9,7 @@ describe API::CriteriaController do
 
     describe "GET criteria" do
       it "returns criteria for the current assignment" do
-        get :index, assignment_id: world.assignment.id, format: :json
+        get :index, params: { assignment_id: world.assignment.id }, format: :json
         expect(assigns(:criteria)[0].id).to eq(world.criteria[0].id)
         expect(response).to render_template(:index)
       end

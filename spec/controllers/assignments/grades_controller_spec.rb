@@ -22,7 +22,7 @@ describe Assignments::GradesController do
 
     describe "GET edit_status" do
       it "assigns params" do
-        get :edit_status, { assignment_id: @assignment.id, grade_ids: [@grade.id] }
+        get :edit_status, params: { assignment_id: @assignment.id, grade_ids: [@grade.id] }
         expect(assigns(:assignment)).to eq(@assignment)
         expect(assigns(:grades)).to eq([@grade])
         expect(response).to render_template(:edit_status)
@@ -31,13 +31,13 @@ describe Assignments::GradesController do
 
     describe "PUT update_status" do
       it "updates the grade status for grades" do
-        put :update_status, { assignment_id: @assignment.id, grade_ids: [@grade.id], grade: { status: "Graded" }}
+        put :update_status, params: { assignment_id: @assignment.id, grade_ids: [@grade.id], grade: { status: "Graded" }}
         expect(@grade.reload.status).to eq("Graded")
       end
 
       it "redirects to session if present"  do
         session[:return_to] = login_path
-        put :update_status, { assignment_id: @assignment.id, grade_ids: [@grade.id], grade: { status: "Graded" }}
+        put :update_status, params: { assignment_id: @assignment.id, grade_ids: [@grade.id], grade: { status: "Graded" }}
         expect(response).to redirect_to(login_path)
       end
     end
@@ -46,7 +46,7 @@ describe Assignments::GradesController do
       it "returns sample csv data" do
         submission = create(:submission, grade: @grade, student: @student,
                             assignment: @assignment)
-        get :export, assignment_id: @assignment, format: :csv
+        get :export, params: { assignment_id: @assignment }, format: :csv
         expect(response.body).to \
           include("First Name,Last Name,Email,Score,Feedback,Raw Score,Statement")
       end
@@ -59,7 +59,7 @@ describe Assignments::GradesController do
           level = Level.create(criterion_id: criterion.id, name: "Sushi Success", points: 2000)
           CriterionGrade.create(criterion: criterion, level_id: level.id, student: @student, points: 2000, assignment: @assignment)
         end
-        get :export_earned_levels, assignment_id: @assignment, format: :csv
+        get :export_earned_levels, params: { assignment_id: @assignment }, format: :csv
 
         expect(response.body).to \
           include("First Name,Last Name,Email,Username,Team")
@@ -69,14 +69,14 @@ describe Assignments::GradesController do
     describe "GET index" do
       it "redirects to the assignments show view if the assigment is not a rubric" do
         allow(@assignment).to receive(:grade_with_rubric?).and_return false
-        get :index, assignment_id: @assignment.id
+        get :index, params: { assignment_id: @assignment.id }
         expect(response).to redirect_to assignment_path(@assignment)
       end
     end
 
     describe "GET mass_edit" do
       it "assigns params" do
-        get :mass_edit, assignment_id: @assignment.id
+        get :mass_edit, params: { assignment_id: @assignment.id }
         expect(assigns(:assignment)).to eq(@assignment)
         expect(assigns(:assignment_type)).to eq(@assignment.assignment_type)
         expect(assigns(:assignment_score_levels)).to eq(@assignment.assignment_score_levels)
@@ -89,7 +89,7 @@ describe Assignments::GradesController do
         student_2 = create(:user, last_name: "zzimmer", first_name: "aaron")
         student_3 = create(:user, last_name: "zzimmer", first_name: "zoron")
         [student_2,student_3].each {|s| s.courses << @course }
-        expect{ get :mass_edit, assignment_id: @assignment.id }.to \
+        expect{ get :mass_edit, params: { assignment_id: @assignment.id }}.to \
           change{Grade.count}.by(2)
         expect(assigns(:grades)[1].student).to eq(student_2)
         expect(assigns(:grades)[2].student).to eq(student_3)
@@ -99,7 +99,7 @@ describe Assignments::GradesController do
         it "assigns params" do
           team = create(:team, course: @course)
           team.students << @student
-          get :mass_edit, assignment_id: @assignment.id, team_id: team.id
+          get :mass_edit, params: { assignment_id: @assignment.id, team_id: team.id }
           expect(assigns(:students)).to eq([@student])
           expect(assigns(:team)).to eq(team)
         end
@@ -117,31 +117,31 @@ describe Assignments::GradesController do
       end
 
       it "updates the grades for the specific assignment" do
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
+        put :mass_update, params: { assignment_id: @assignment.id,
+          assignment: { grades_attributes: grades_attributes }}
         expect(@grade.reload.raw_points).to eq 1000
       end
 
       it "timestamps the grades" do
         current_time = DateTime.now
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
+        put :mass_update, params: { assignment_id: @assignment.id,
+          assignment: { grades_attributes: grades_attributes }}
         expect(@grade.reload.graded_at).to be > current_time
       end
 
       it "only sends notifications to the students if the grade changed" do
         @grade.update_attributes({ raw_points: 1000 })
         run_background_jobs_immediately do
-          expect { put :mass_update, assignment_id: @assignment.id,
-                   assignment: { grades_attributes: grades_attributes } }.to_not \
+          expect { put :mass_update, params: { assignment_id: @assignment.id,
+                   assignment: { grades_attributes: grades_attributes } }}.to_not \
             change { ActionMailer::Base.deliveries.count }
         end
       end
 
       it "redirects to assignment path with a team" do
         team = create(:team, course: @course)
-        put :mass_update, assignment_id: @assignment.id, team_id: team.id,
-          assignment: { grades_attributes: grades_attributes }
+        put :mass_update, params: { assignment_id: @assignment.id, team_id: team.id,
+          assignment: { grades_attributes: grades_attributes }}
         expect(response).to \
           redirect_to(assignment_path(@assignment, team_id: team.id))
       end
@@ -149,8 +149,8 @@ describe Assignments::GradesController do
       it "redirects on failure" do
         allow_any_instance_of(Assignment).to \
           receive(:update_attributes).and_return false
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
+        put :mass_update, params: { assignment_id: @assignment.id,
+          assignment: { grades_attributes: grades_attributes }}
         expect(response).to \
           redirect_to(mass_edit_assignment_grades_path(@assignment))
       end
@@ -158,19 +158,19 @@ describe Assignments::GradesController do
 
     describe "POST self_log" do
       it "redirects back to the root" do
-        expect(post :self_log, assignment_id: @assignment.id ).to \
+        expect(post :self_log, params: { assignment_id: @assignment.id }).to \
           redirect_to(:root)
       end
     end
 
     describe "DELETE delete_all" do
       it "deletes all the grades for the assignment" do
-        delete :delete_all, assignment_id: @assignment.id
+        delete :delete_all, params: { assignment_id: @assignment.id }
         expect(@assignment.reload.grades).to be_empty
       end
 
       it "redirects to assignments page on success" do
-        delete :delete_all, assignment_id: @assignment.id
+        delete :delete_all, params: { assignment_id: @assignment.id }
         expect(response).to redirect_to(assignment_path(@assignment))
       end
     end
@@ -187,14 +187,14 @@ describe Assignments::GradesController do
         before(:all) { @assignment.update(student_logged: true) }
 
         it "creates a maximum score by the student if present" do
-          post :self_log, assignment_id: @assignment.id
+          post :self_log, params: { assignment_id: @assignment.id }
           grade = @student.grade_for_assignment(@assignment)
           expect(grade.raw_points).to eq @assignment.full_points
         end
 
         it "reports errors on failure to save" do
           allow_any_instance_of(Grade).to receive(:save).and_return false
-          post :self_log, assignment_id: @assignment.id
+          post :self_log, params: { assignment_id: @assignment.id }
           grade = @student.grade_for_assignment(@assignment)
           expect(flash[:notice]).to \
             eq("We're sorry, there was an error saving your grade.")
@@ -202,8 +202,8 @@ describe Assignments::GradesController do
 
         context "with assignment levels" do
           it "creates a score for the student at the specified level" do
-            post :self_log, assignment_id: @assignment.id,
-              grade: { raw_points: "10000" }
+            post :self_log, params: { assignment_id: @assignment.id,
+              grade: { raw_points: "10000" }}
             grade = @student.grade_for_assignment(@assignment)
             expect(grade.raw_points).to eq 10000
           end
@@ -214,7 +214,7 @@ describe Assignments::GradesController do
         before(:all) { @assignment.update(student_logged: false) }
 
         it "creates should not change the student score" do
-          post :self_log, assignment_id: @assignment.id
+          post :self_log, params: { assignment_id: @assignment.id }
           grade = @student.grade_for_assignment(@assignment)
           expect(grade.raw_points).to eq nil
         end
@@ -223,42 +223,42 @@ describe Assignments::GradesController do
 
     describe "GET edit_status" do
       it "redirects back to the root" do
-        expect(get :edit_status, assignment_id: @assignment).to \
+        expect(get :edit_status, params: { assignment_id: @assignment }).to \
           redirect_to(:root)
       end
     end
 
     describe "GET update_status" do
       it "redirects back to the root" do
-        expect(put :update_status, assignment_id: @assignment).to \
+        expect(put :update_status, params: { assignment_id: @assignment }).to \
           redirect_to(:root)
       end
     end
 
     describe "GET export" do
       it "redirects back to the root" do
-        expect(get :export, assignment_id: @assignment, format: :csv).to \
+        expect(get :export, params: { assignment_id: @assignment }, format: :csv).to \
           redirect_to(:root)
       end
     end
 
     describe "GET index" do
       it "redirects back to the root" do
-        expect(get :index, { assignment_id: @assignment }).to \
+        expect(get :index, params: { assignment_id: @assignment }).to \
           redirect_to(:root)
       end
     end
 
     describe "GET mass_edit" do
       it "redirects back to the root" do
-        expect(get :mass_edit, { assignment_id: @assignment.id  }).to \
+        expect(get :mass_edit, params: { assignment_id: @assignment.id  }).to \
           redirect_to(:root)
       end
     end
 
     describe "PUT mass_update" do
       it "redirects back to the root" do
-        expect(get :mass_update, { assignment_id: @assignment.id  }).to \
+        expect(get :mass_update, params: { assignment_id: @assignment.id  }).to \
           redirect_to(:root)
       end
     end

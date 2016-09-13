@@ -31,7 +31,7 @@ describe API::PredictedEarnedGradesController do
 
     describe "GET index" do
       it "assigns the attributes with call to update" do
-        get :index, format: :json, id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:assignments).class).to eq(PredictedAssignmentCollectionSerializer)
         expect(response).to render_template(:index)
       end
@@ -41,13 +41,14 @@ describe API::PredictedEarnedGradesController do
       it "updates the predicted points for a grade" do
         predicted_earned_grade = create(:predicted_earned_grade, assignment: world.assignment, student: world.student)
         predicted_points = (world.assignment.full_points * 0.75).to_i
-        put :update, id: predicted_earned_grade.id, predicted_points: predicted_points, format: :json
+        put :update, params: { id: predicted_earned_grade.id,
+                               predicted_points: predicted_points }, format: :json
         expect(PredictedEarnedGrade.where(student: world.student, assignment: world.assignment).first.predicted_points).to eq(predicted_points)
         expect(JSON.parse(response.body)).to eq({"id" => predicted_earned_grade.id, "predicted_points" => predicted_points})
       end
 
       it "renders a 404 if prediction not found" do
-        put :update, id: 0, predicted_points: 0, format: :json
+        put :update, params: { id: 0, predicted_points: 0 }, format: :json
         expect(response.status).to eq(404)
       end
     end

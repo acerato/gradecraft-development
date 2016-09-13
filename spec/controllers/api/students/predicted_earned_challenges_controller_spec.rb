@@ -17,13 +17,13 @@ describe API::Students::PredictedEarnedChallengesController do
 
       it "adds the prediction data to the challenge model with a zero points prediction" do
         prediction = create(:predicted_earned_challenge, challenge: world.challenge, student: world.student)
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:challenges).last.prediction).to eq({ id: prediction.id, predicted_points: 0 })
       end
 
       it "adds visible grades to the challenge data" do
         grade = create(:graded_challenge_grade, challenge: world.challenge, team: world.team)
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:challenges).last.grade).to eq({
           score: grade.score,
           final_points: grade.score
@@ -33,7 +33,7 @@ describe API::Students::PredictedEarnedChallengesController do
       it "adds grades as nil when not visible to student" do
         world.challenge.update(release_necessary: true)
         grade = create(:grades_not_released_challenge_grade, challenge: world.challenge, team: world.team)
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:challenges).last.grade).to eq({
           score: nil,
           final_points: nil
@@ -41,7 +41,7 @@ describe API::Students::PredictedEarnedChallengesController do
       end
 
       it "assigns the challenges with no call to update" do
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:student)).to eq(world.student)
         expect(assigns(:challenges)[0].attributes.length).to eq(predictor_challenge_attributes.length)
         predictor_challenge_attributes do |attr|

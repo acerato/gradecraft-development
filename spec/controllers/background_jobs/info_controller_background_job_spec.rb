@@ -19,17 +19,18 @@ RSpec.describe InfoController, type: :controller, background_job: true do
 
   describe "#gradebook" do
     it "increases the queue size by one" do
-      expect{ get :gradebook, id: course.id }.to change { queue(GradebookExporterJob).size }.by(1)
+      expect{ get :gradebook, params: { id: course.id }}.to \
+        change { queue(GradebookExporterJob).size }.by(1)
     end
 
     it "queues the job" do
-      get :gradebook, id: course.id
+      get :gradebook, params: { id: course.id }
       expect(GradebookExporterJob).to have_queued(job_attributes)
     end
 
     it "creates calls #new on GradebookExporterJob" do
       expect(GradebookExporterJob).to respond_to(:new).with(1).argument
-      get :gradebook, id: course.id
+      get :gradebook, params: { id: course.id }
     end
   end
 end

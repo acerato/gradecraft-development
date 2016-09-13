@@ -15,7 +15,7 @@ describe AnnouncementsController do
     describe "GET #show" do
       it "marks the announcement as read by the student" do
         announcement = create :announcement, course: @course
-        get :show, id: announcement.id
+        get :show, params: { id: announcement.id }
         expect(announcement.read?(@student)).to be_truthy
       end
     end
@@ -28,7 +28,8 @@ describe AnnouncementsController do
 
     describe "POST #create" do
       it "should not allow a student to create an announcement" do
-        expect { post :create, announcement: { title: "New Tour", body: "Test" } }.to \
+        expect { post :create, params: { announcement:
+                                         { title: "New Tour", body: "Test" }}}.to \
           raise_error CanCan::AccessDenied
       end
     end
@@ -61,7 +62,7 @@ describe AnnouncementsController do
 
       context "with a successful announcement" do
         it "creates a new announcement" do
-          post :create, announcement: { title: "New Tour", body: body }
+          post :create, params: { announcement: { title: "New Tour", body: body }}
           announcement = Announcement.unscoped.last
           expect(announcement.title).to eq "New Tour"
           expect(announcement.body).to eq body
@@ -70,7 +71,7 @@ describe AnnouncementsController do
         end
 
         it "redirects back to the announcements page" do
-          post :create, announcement: { title: "New Tour", body: body }
+          post :create, params: { announcement: { title: "New Tour", body: body }}
           expect(response).to redirect_to announcements_path
         end
 
@@ -79,14 +80,14 @@ describe AnnouncementsController do
           CourseMembership.create! course_id: @course.id,
             user_id: student.id, role: "student"
           expect {
-            post :create, announcement: { title: "New Tour", body: body }
+            post :create, params: { announcement: { title: "New Tour", body: body }}
           }.to change  { ActionMailer::Base.deliveries.count }.by 2
         end
       end
 
       context "with an invalid announcement" do
         it "renders view with the errors" do
-          post :create, announcement: { title: "", body: body }
+          post :create, params: { announcement: { title: "", body: body }}
           expect(response).to render_template :new
         end
       end

@@ -22,7 +22,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
   end
 
   describe "POST #create" do
-    subject { post :create, course_id: course.id }
+    subject { post :create, params: { course_id: course.id }}
 
     context "the presenter successfully creates and enqueues the export" do
       it "sets the job success flash message" do
@@ -48,7 +48,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    subject { delete :destroy, id: course_analytics_export.id }
+    subject { delete :destroy, params: { id: course_analytics_export.id }}
 
     context "the export is successfully destroyed" do
       it "notifies the user of success" do
@@ -73,7 +73,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
   end
 
   describe "GET #download" do
-    let(:result) { get :download, id: course_analytics_export.id }
+    let(:result) { get :download, params: { id: course_analytics_export.id }}
 
     before do
       allow(presenter).to receive(:send_data_options) { ["options"] }
@@ -83,7 +83,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
       expect(controller).to receive(:send_data).with "options" do
         # expressly render nothing so that the controller doesn't attempt
         # to render the template
-        controller.render nothing: true
+        controller.render head: :ok, body: nil
       end
 
       result
@@ -102,7 +102,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
     end
 
     describe "GET #secure_download" do
-      let(:result) { get :secure_download, secure_download_params }
+      let(:result) { get :secure_download, params: secure_download_params }
 
       before do
         allow(presenter).to receive(:send_data_options) { ["options"] }
@@ -118,7 +118,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
           expect(controller).to receive(:send_data).with "options" do
             # expressly render nothing so that the controller doesn't attempt
             # to render the template
-            controller.render nothing: true
+            controller.render head: :ok, body: nil
           end
 
           result
@@ -155,7 +155,7 @@ RSpec.describe CourseAnalyticsExportsController, type: :controller do
       end
 
       describe "skipped filters" do
-        let(:result) { get :secure_download, secure_download_params }
+        let(:result) { get :secure_download, params: secure_download_params }
 
         it "doesn't require login" do
           expect(controller).not_to receive(:require_login)

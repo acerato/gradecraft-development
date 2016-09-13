@@ -74,13 +74,15 @@ describe API::PredictedEarnedChallengesController do
       it "updates the predicted points for a challenge" do
         predicted_earned_challenge = create(:predicted_earned_challenge, challenge: world.challenge, student: world.student)
         predicted_points = (world.challenge.full_points * 0.75).to_i
-        put :update, id: predicted_earned_challenge, predicted_points: predicted_points, format: :json
+        put :update,
+          params: { id: predicted_earned_challenge, predicted_points: predicted_points },
+          format: :json
         expect(PredictedEarnedChallenge.where(student: world.student, challenge: world.challenge).first.predicted_points).to eq(predicted_points)
         expect(JSON.parse(response.body)).to eq({"id" => predicted_earned_challenge.id, "predicted_points" => predicted_points})
       end
 
       it "renders a 404 if prediction not found" do
-        put :update, id: 0, predicted_points: 0, format: :json
+        put :update, params: { id: 0, predicted_points: 0 }, format: :json
         expect(response.status).to eq(404)
       end
     end

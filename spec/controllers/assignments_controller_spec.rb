@@ -42,7 +42,7 @@ describe AssignmentsController do
 
     describe "GET show" do
       it "returns the assignment show page" do
-        get :show, id: @assignment.id
+        get :show, params: { id: @assignment.id }
         expect(response).to render_template(:show)
       end
     end
@@ -55,13 +55,13 @@ describe AssignmentsController do
       end
 
       it "duplicates an assignment" do
-        post :copy, id: @assignment.id
+        post :copy, params: { id: @assignment.id }
         expect expect(@course.assignments.count).to eq(2)
       end
 
       it "duplicates score levels" do
         @assignment.assignment_score_levels.create(name: "Level 1", points: 10_000)
-        post :copy, id: @assignment.id
+        post :copy, params: { id: @assignment.id }
         duplicated = Assignment.last
         expect(duplicated.id).to_not eq @assignment.id
         expect(duplicated.assignment_score_levels.first.name).to eq "Level 1"
@@ -72,7 +72,7 @@ describe AssignmentsController do
         @assignment.create_rubric
         @assignment.rubric.criteria.create name: "Rubric 1", max_points: 10_000, order: 1
         @assignment.rubric.criteria.first.levels.first.badges.create! name: "Blah", course: @course
-        post :copy, id: @assignment.id
+        post :copy, params: { id: @assignment.id }
         duplicated = Assignment.last
         expect(duplicated.rubric).to_not be_nil
         expect(duplicated.rubric.criteria.first.name).to eq "Rubric 1"
@@ -82,7 +82,7 @@ describe AssignmentsController do
       end
 
       it "redirects to the edit page for the duplicated assignment" do
-        post :copy, id: @assignment.id
+        post :copy, params: { id: @assignment.id }
         duplicated = Assignment.last
         expect(response).to redirect_to(edit_assignment_path(duplicated))
       end
@@ -92,7 +92,8 @@ describe AssignmentsController do
       it "creates the assignment with valid attributes" do
         params = attributes_for(:assignment)
         params[:assignment_type_id] = @assignment_type.id
-        expect{ post :create, assignment: params }.to change(Assignment,:count).by(1)
+        expect{ post :create, params: { assignment: params }}.to \
+          change(Assignment,:count).by(1)
       end
 
       it "manages file uploads" do
@@ -101,40 +102,42 @@ describe AssignmentsController do
         params[:assignment_type_id] = @assignment_type
         params.merge! assignment_files_attributes: {"0" => {
           "file" => [fixture_file("test_file.txt", "txt")] }}
-        post :create, assignment: params
+        post :create, params: { assignment: params }
         assignment = Assignment.where(name: params[:name]).last
         expect expect(assignment.assignment_files.count).to eq(1)
         expect expect(assignment.assignment_files[0].filename).to eq("test_file.txt")
       end
 
       it "redirects to new from with invalid attributes" do
-        expect{ post :create, assignment: attributes_for(:assignment, name: nil) }.to_not change(Assignment,:count)
+        expect{ post :create,
+                params: { assignment: attributes_for(:assignment, name: nil) }}.to_not \
+        change(Assignment,:count)
       end
     end
 
     describe "POST update" do
       it "updates the assignment" do
         params = { name: "new name" }
-        post :update, id: @assignment.id, assignment: params
+        post :update, params: { id: @assignment.id, assignment: params }
         expect(response).to redirect_to(assignments_path)
         expect(@assignment.reload.name).to eq("new name")
       end
 
       it "updates the usage of rubrics" do
         @assignment.update(use_rubric: false)
-        post :update, id: @assignment.id, assignment: { use_rubric: true },
+        post :update, params: { id: @assignment.id, assignment: { use_rubric: true }},
           format: :json
         expect(@assignment.reload.use_rubric).to eq true
       end
 
       it "renders the template again if there are validation errors" do
-        post :update, id: @assignment.id, assignment: { name: "" }
+        post :update, params: { id: @assignment.id, assignment: { name: "" }}
         expect(response).to render_template(:edit)
       end
 
       it "manages file uploads" do
         params = {assignment_files_attributes: {"0" => {"file" => [fixture_file("test_file.txt", "txt")]}}}
-        post :update, id: @assignment.id, assignment: params
+        post :update, params: { id: @assignment.id, assignment: params }
         expect expect(@assignment.assignment_files.count).to eq(1)
       end
     end
@@ -144,7 +147,7 @@ describe AssignmentsController do
         second_assignment = create(:assignment, assignment_type: @assignment_type)
         @course.assignments << second_assignment
 
-        post :sort, assignment: [second_assignment.id, @assignment.id]
+        post :sort, params: { assignment: [second_assignment.id, @assignment.id] }
 
         expect(@assignment.reload.position).to eq(2)
         expect(second_assignment.reload.position).to eq(1)
@@ -153,14 +156,15 @@ describe AssignmentsController do
 
     describe "GET export_structure" do
       it "retrieves the export_structure download" do
-        get :export_structure, id: @course.id, format: :csv
+        get :export_structure, params: { id: @course.id }, format: :csv
         expect(response.body).to include("Assignment ID,Name,Point Total,Description,Open At,Due At,Accept Until")
       end
     end
 
     describe "GET destroy" do
       it "destroys the assignment" do
-        expect{ get :destroy, id: @assignment }.to change(Assignment,:count).by(-1)
+        expect{ get :destroy, params: { id: @assignment }}.to \
+          change(Assignment,:count).by(-1)
       end
     end
   end
@@ -184,13 +188,13 @@ describe AssignmentsController do
 
       it "marks the grade as reviewed" do
         grade = create :grade, assignment: @assignment, student: @student, status: "Graded"
-        get :show, id: @assignment.id
+        get :show, params: { id: @assignment.id }
         expect(grade.reload).to be_feedback_reviewed
       end
 
       it "redirects to the assignments path of the assignment does not exist for the current course" do
         another_assignment = create(:assignment)
-        get :show, id: another_assignment.id
+        get :show, params: { id: another_assignment.id }
         expect(response).to redirect_to assignments_path
       end
     end
@@ -216,7 +220,7 @@ describe AssignmentsController do
         :destroy
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {id: "1"}).to redirect_to(:root)
+          expect(get route, params: { id: "1" }).to redirect_to(:root)
         end
       end
     end

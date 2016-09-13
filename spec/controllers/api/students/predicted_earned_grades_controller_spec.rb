@@ -14,10 +14,10 @@ describe API::Students::PredictedEarnedGradesController  do
       end
 
       it "assigns the assignments with no call to update" do
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:assignments).current_user).to eq(professor)
         expect(assigns(:assignments).student).to eq(world.student)
-        predictor_assignment_attributes.each do |attr|
+        predictor_challenge_attributes.each do |attr|
           expect(assigns(:assignments).assignments[0][attr]).to \
             eq(world.assignment[attr])
         end
@@ -27,7 +27,7 @@ describe API::Students::PredictedEarnedGradesController  do
 
       it "assigns a unreleased grade for the assignment with no score data" do
         grade = create(:unreleased_grade, student: world.student, assignment: world.assignment)
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:assignments).current_user).to eq(professor)
         expect(assigns(:assignments).student).to eq(world.student)
         expect(assigns(:assignments)[0].prediction[:predicted_points]).to eq(0)
@@ -41,7 +41,7 @@ describe API::Students::PredictedEarnedGradesController  do
       it "assigns a released grade for the assignment with no predicted score" do
         grade = create(:released_grade, student: world.student, assignment: world.assignment)
         predicted_earned_grade = create(:predicted_earned_grade, assignment: world.assignment, student: world.student)
-        get :index, format: :json, student_id: world.student.id
+        get :index, params: { student_id: world.student.id }, format: :json
         expect(assigns(:assignments).current_user).to eq(professor)
         expect(assigns(:assignments).student).to eq(world.student)
         expect(assigns(:assignments)[0].prediction[:predicted_points]).to eq(0)

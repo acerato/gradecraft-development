@@ -16,7 +16,7 @@ describe Challenges::ChallengeGradesController do
 
     describe "GET new" do
       it "shows the new challenge grade form" do
-        get :new, {challenge_id: challenge, team_id: team}
+        get :new, params: { challenge_id: challenge, team_id: team }
         expect(assigns(:challenge)).to eq(challenge)
         expect(assigns(:team)).to eq(team)
         expect(response).to render_template(:new)
@@ -31,20 +31,23 @@ describe Challenges::ChallengeGradesController do
         params[:challenge_id] = challenge.id
         params[:team_id] = team2.id
         params[:status] = "Released"
-        post :create, challenge_id: challenge.id, challenge_grade: params
+        post :create, params: { challenge_id: challenge.id, challenge_grade: params }
         expect(challenge.challenge_grades.where(:team_id => team2.id).first.score).to eq(101)
         expect(response).to redirect_to(challenge)
       end
 
       it "redirects to new form with invalid attributes" do
-        expect{ post :create, challenge_id: challenge.id, challenge_grade: attributes_for(:challenge_grade, team_id: nil) }.to_not change(ChallengeGrade,:count)
+        expect{ post :create,
+                params: { challenge_id: challenge.id,
+                          challenge_grade: attributes_for(:challenge_grade, team_id: nil) }}
+          .to_not change(ChallengeGrade,:count)
       end
     end
 
 
     describe "GET mass_edit" do
       it "assigns params" do
-        get :mass_edit, challenge_id: challenge.id
+        get :mass_edit, params: { challenge_id: challenge.id }
         expect(response).to render_template(:mass_edit)
       end
     end
@@ -56,8 +59,8 @@ describe Challenges::ChallengeGradesController do
             id: @challenge_grade.id
           }
         }
-        put :mass_update, challenge_id: challenge.id,
-          challenge: { challenge_grades_attributes: challenge_grades_attributes }
+        put :mass_update, params: { challenge_id: challenge.id,
+          challenge: { challenge_grades_attributes: challenge_grades_attributes }}
         expect(@challenge_grade.reload.score).to eq 1000
       end
 
@@ -67,22 +70,22 @@ describe Challenges::ChallengeGradesController do
             id: @challenge_grade.id
           }
         }
-        put :mass_update, challenge_id: challenge.id,
-          challenge: { challenge_grades_attributes: challenge_grades_attributes }
+        put :mass_update, params: { challenge_id: challenge.id,
+          challenge: { challenge_grades_attributes: challenge_grades_attributes }}
         expect(response).to render_template(:mass_edit)
       end
     end
 
     describe "GET edit_status" do
       it "displays the edit_status page" do
-        get :edit_status, { challenge_id: challenge.id, challenge_grade_ids: [ @challenge_grade.id ] }
+        get :edit_status, params: { challenge_id: challenge.id, challenge_grade_ids: [ @challenge_grade.id ] }
         expect(response).to render_template(:edit_status)
       end
     end
 
     describe "POST update_status" do
       it "updates the status of multiple challenge grades" do
-        post :update_status, { challenge_id: challenge.id, challenge_grade_ids: [ @challenge_grade.id ], challenge_grade: {"status"=> "Released"}}
+        post :update_status, params: { challenge_id: challenge.id, challenge_grade_ids: [ @challenge_grade.id ], challenge_grade: {"status"=> "Released"}}
         expect(response).to redirect_to challenge_path(challenge)
       end
     end
@@ -95,7 +98,7 @@ describe Challenges::ChallengeGradesController do
         :create
       ].each do |route|
           it "#{route} redirects to root" do
-            expect(get route, {challenge_id: 2 }).to redirect_to(:root)
+            expect(get route, params: { challenge_id: 2 }).to redirect_to(:root)
           end
         end
     end
@@ -108,7 +111,7 @@ describe Challenges::ChallengeGradesController do
       :update_status
     ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {challenge_id: 2, id: "1"}).to redirect_to(:root)
+          expect(get route, params: { challenge_id: 2, id: "1" }).to redirect_to(:root)
         end
       end
     end

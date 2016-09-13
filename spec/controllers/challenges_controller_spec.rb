@@ -34,7 +34,7 @@ describe ChallengesController do
 
     describe "GET show" do
       it "returns the challenge show page" do
-        get :show, id: @challenge.id
+        get :show, params: { id: @challenge.id }
         expect(assigns(:challenge)).to eq(@challenge)
         expect(response).to render_template(:show)
       end
@@ -50,7 +50,7 @@ describe ChallengesController do
 
     describe "GET edit" do
       it "assigns the challenge and title" do
-        get :edit, id: @challenge.id
+        get :edit, params: { id: @challenge.id }
         expect(assigns(:challenge)).to eq(@challenge)
         expect(response).to render_template(:edit)
       end
@@ -60,7 +60,8 @@ describe ChallengesController do
       it "creates the challenge with valid attributes"  do
         params = attributes_for(:challenge)
         params[:challenge_id] = @challenge
-        expect{ post :create, challenge: params }.to change(Challenge,:count).by(1)
+        expect{ post :create, params: { challenge: params }}.to \
+          change(Challenge,:count).by(1)
       end
 
       it "manages file uploads" do
@@ -68,13 +69,14 @@ describe ChallengesController do
         params = attributes_for(:challenge)
         params[:challenge_id] = @challenge
         params.merge! challenge_files_attributes: {"0" => {"file" => [fixture_file("test_file.txt", "txt")]}}
-        post :create, challenge: params
+        post :create, params: { challenge: params }
         challenge = Challenge.where(name: params[:name]).last
         expect expect(challenge.challenge_files.count).to eq(1)
       end
 
       it "redirects to new from with invalid attributes" do
-        expect{ post :create, challenge: attributes_for(:challenge, name: nil) }.to_not change(Challenge,:count)
+        expect{ post :create, params: { challenge: attributes_for(:challenge, name: nil) }}
+          .to_not change(Challenge,:count)
       end
     end
 
@@ -83,20 +85,20 @@ describe ChallengesController do
 
       it "updates the challenge" do
         params = { name: "new name" }
-        post :update, id: @challenge_2.id, challenge: params
+        post :update, params: { id: @challenge_2.id, challenge: params }
         expect(response).to redirect_to(challenges_path)
         expect(@challenge_2.reload.name).to eq("new name")
       end
 
       it "redirects to the edit form if the update fails" do
         params = { name: nil }
-        post :update, id: @challenge_2.id, challenge: params
+        post :update, params: { id: @challenge_2.id, challenge: params }
         expect(response).to render_template(:edit)
       end
 
       it "manages file uploads" do
         params = {challenge_files_attributes: {"0" => {"file" => [fixture_file("test_file.txt", "txt")]}}}
-        post :update, id: @challenge_2.id, challenge: params
+        post :update, params: { id: @challenge_2.id, challenge: params }
         expect expect(@challenge_2.challenge_files.count).to eq(1)
       end
     end
@@ -104,7 +106,8 @@ describe ChallengesController do
     describe "GET destroy" do
       it "destroys the challenge" do
         another_challenge = create :challenge, course: @course
-        expect{ get :destroy, id: another_challenge }.to change(Challenge,:count).by(-1)
+        expect{ get :destroy, params: { id: another_challenge }}.to \
+          change(Challenge,:count).by(-1)
       end
     end
   end
@@ -133,7 +136,7 @@ describe ChallengesController do
         :destroy
       ].each do |route|
         it "#{route} redirects to root" do
-          expect(get route, {id: @challenge.id}).to redirect_to(:root)
+          expect(get route, params: { id: @challenge.id }).to redirect_to(:root)
         end
       end
     end

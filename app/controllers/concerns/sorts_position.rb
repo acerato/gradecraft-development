@@ -10,6 +10,6 @@ module SortsPosition
         current_course.send(method).update(id, position: index + 1)
       end
     end
-    render nothing: true
+    render head: :ok, body: nil
   end
 end

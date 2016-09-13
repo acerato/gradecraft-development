@@ -9,7 +9,9 @@ describe API::AssignmentTypeWeightsController do
 
     describe "POST create" do
       it "is a protected route" do
-        expect(post :create, assignment_type_id: world.assignment_type.id, weight: 4, format: :json).to redirect_to(:root)
+        expect(post :create,
+               params: { assignment_type_id: world.assignment_type.id, weight: 4 },
+               format: :json).to redirect_to(:root)
       end
     end
   end
@@ -19,13 +21,15 @@ describe API::AssignmentTypeWeightsController do
 
     describe "create" do
       it "returns 400 if the assignment type is not weightable" do
-        post :create, assignment_type_id: world.assignment_type.id, weight: 4, format: :json
+        post :create, params: { assignment_type_id: world.assignment_type.id, weight: 4 },
+          format: :json
         expect(response.status).to eq(404)
       end
 
       it "updates the student's weight" do
         world.assignment_type.update(student_weightable: true)
-        post :create, assignment_type_id: world.assignment_type.id, weight: 4, format: :json
+        post :create, params: { assignment_type_id: world.assignment_type.id, weight: 4 },
+          format: :json
         expect(world.assignment_type.weight_for_student(world.student)).to eq(4)
       end
     end

@@ -26,7 +26,7 @@ describe AuthorizationsController do
 
       context "for a new authorization" do
         it "creates the authorization for the user and provider" do
-          get :create, provider: provider
+          get :create, params: { provider: provider }
 
           authorization = UserAuthorization.unscoped.last
 
@@ -37,7 +37,7 @@ describe AuthorizationsController do
         it "redirects back to the referrer" do
           session[:return_to] = courses_path
 
-          get :create, provider: provider
+          get :create, params: { provider: provider }
 
           expect(response).to redirect_to courses_path
         end

@@ -1,7 +1,7 @@
 class ApplicationControllerTest < ApplicationController
   def html_page
     respond_to do |format|
-      format.html { render text: "<div>page loaded</div>", response: 200 }
+      format.html { render plain: "<div>page loaded</div>", response: 200 }
     end
   end
 

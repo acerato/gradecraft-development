@@ -10,7 +10,8 @@ describe API::Grades::GradeFilesController do
     describe "POST create" do
       it "adds upload file to grade" do
         grade_file = fixture_file("Too long, strange characters, and Spaces (In) Name.jpg", "img/jpg")
-        post :create, grade_id: world.grade.id, grade_files: [grade_file], format: :json
+        post :create, params: { grade_id: world.grade.id, grade_files: [grade_file] },
+          format: :json
         expect(world.grade.grade_files.count).to eq(1)
       end
     end
@@ -21,7 +22,8 @@ describe API::Grades::GradeFilesController do
 
     describe "POST create" do
       it "is a protected route" do
-        expect(post :create, grade_id: world.grade.id, format: :json).to redirect_to(:root)
+        expect(post :create, params: { grade_id: world.grade.id }, format: :json).to \
+          redirect_to(:root)
       end
     end
   end

@@ -16,7 +16,7 @@ describe API::Grades::EarnedBadgesController do
                    earned_badges: [{ badge_id: badge_1.id, student_id: world.student },
                                    { badge_id: badge_2.id, student_id: world.student },
                                    { badge_id: badge_3.id, student_id: world.student }]}
-        expect { post :create, params }.to change { EarnedBadge.count }.by(3)
+        expect { post :create, params: params }.to change { EarnedBadge.count }.by(3)
       end
     end
 
@@ -25,14 +25,14 @@ describe API::Grades::EarnedBadgesController do
         earned_badge_1 = create(:earned_badge, grade: world.grade)
         earned_badge_2 = create(:earned_badge, grade: world.grade)
 
-        expect { delete :delete_all, grade_id: world.grade.id }.to \
+        expect { delete :delete_all, params: { grade_id: world.grade.id }}.to \
           change { EarnedBadge.count }.by(-2)
         expect(JSON.parse(response.body)).to \
           eq({"message" => "Earned badges successfully deleted", "success" => true})
       end
 
       it "renders error if no badges found to delete" do
-        delete :delete_all, grade_id: world.grade.id
+        delete :delete_all, params: { grade_id: world.grade.id }
 
         expect(JSON.parse(response.body)).to \
           eq({"message" => "Earned badges failed to delete", "success" => false})
