@@ -23,7 +23,7 @@ RSpec.describe GradesController, type: :controller, background_job: true do
 
     describe "#update" do
       let(:request_attrs) {{ id: grade.id, grade: { raw_points: 50 } }}
-      subject { put :update, request_attrs }
+      subject { put :update, params: request_attrs }
 
       before do
         allow(Grade).to receive(:find_or_create).and_return grade
@@ -64,7 +64,7 @@ RSpec.describe GradesController, type: :controller, background_job: true do
       let(:grade_ids) { [grade.id, grade2.id] }
 
       describe "PUT #update_status" do
-        subject { put :update_status, request_attrs }
+        subject { put :update_status, params: request_attrs }
         before { enroll_and_login_professor }
 
         context "params[:file] is present" do

@@ -23,7 +23,7 @@ RSpec.describe Assignments::GradesController, type: :controller, background_job:
     describe "#self_log" do
       before { allow_any_instance_of(Assignment).to receive(:student_logged?) { true }}
       let(:request_attrs) {{ assignment_id: assignment.id }}
-      subject { post :self_log, request_attrs }
+      subject { post :self_log, params: request_attrs }
       before { enroll_and_login_student }
       before(:each) { cache_everything }
 
@@ -46,7 +46,7 @@ RSpec.describe Assignments::GradesController, type: :controller, background_job:
       describe "PUT #mass_update" do
         before { enroll_and_login_professor }
         let(:request_attrs) {{ assignment_id: assignment.id, assignment: {} }}
-        subject { put :mass_update, request_attrs }
+        subject { put :mass_update, params: request_attrs }
 
         before do
           allow(course).to receive_message_chain(:assignments, :find) { assignment }

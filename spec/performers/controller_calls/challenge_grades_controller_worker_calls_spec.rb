@@ -25,7 +25,7 @@ RSpec.describe ChallengeGradesController, type: :controller, background_job: tru
 
     describe "#update" do
       let(:params) { attributes_for(:challenge_grade).merge(challenge_id: challenge.id) }
-      subject { post :update, id: challenge_grade.id, challenge_grade: params }
+      subject { post :update, params: { id: challenge_grade.id, challenge_grade: params }}
 
       before do
         allow(ChallengeGrade).to receive(:find_or_create).and_return challenge_grade
@@ -70,7 +70,7 @@ RSpec.describe ChallengeGradesController, type: :controller, background_job: tru
       let(:challenge_grade_ids) { [challenge_grade.id, challenge_grade2.id] }
 
       describe "PUT #update_status" do
-        subject { put :update_status, request_attrs }
+        subject { put :update_status, params: request_attrs }
         before { enroll_and_login_professor }
 
         context "params[:file] is present" do
