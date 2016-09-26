@@ -365,8 +365,7 @@ is for. Did you learn nothing from my chemistry class? - Walter H. White",
     status: "Graded",
     instructor_modified: true,
     raw_points: -> { 80000 },
-    feedback: 'As Aristotle said, <strong>"The whole is greater than the sum \
-of its parts."</strong>'
+    feedback: 'As Aristotle said, <strong>"The whole is greater than the sum of its parts."</strong>'
   },
   rubric: true,
   student_submissions: true
