@@ -35,7 +35,7 @@ class Assignments::Presenter < Showtime::Presenter
   def prediction_for(assignment)
     grade_for(assignment).predicted_points
   end
-  
+
   def positive_prediction_for?(assignment)
     grade_for(assignment).predicted_points > 0
   end
@@ -199,5 +199,17 @@ class Assignments::Presenter < Showtime::Presenter
 
   def teams
     course.teams
+  end
+
+  # !
+  def viewable_criterion_grades(student_id=nil)
+    query = assignment.criterion_grades
+    query = query.where(student_id: student_id) if student_id.present?
+    query
+  end
+
+ # !
+  def viewable_rubric_level_earned?(student_id, level_id)
+    viewable_criterion_grades(student_id).any? { |criterion_grade| criterion_grade.level_id == level_id }
   end
 end

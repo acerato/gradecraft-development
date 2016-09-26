@@ -66,6 +66,10 @@ GradeCraft::Application.routes.draw do
       get "export_structure"
     end
 
+    member do
+      get "criterion_grades_review"
+    end
+
     # routes for all grades that are associated with an assignment
     # single resources should go directly on the grades controller
     resources :grades, only: [:index], module: :assignments do
