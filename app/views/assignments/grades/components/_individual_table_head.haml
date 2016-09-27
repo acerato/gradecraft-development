@@ -1,0 +1,7 @@
+%th{:style => "text-align: right"}= "#{term_for :student}"
+%th.center{:align => "center", scope: "col", "data-dynatable-no-sort" => "true" }
+  - if @assignment.grade_checkboxes?
+    %span.sr-only Check/Uncheck
+    %button.button.select-all= "Check All"
+    %button.button.select-none= "Uncheck All"
+%th
