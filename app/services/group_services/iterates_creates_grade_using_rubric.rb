@@ -7,14 +7,10 @@ module Services
 
       expects :raw_params
       expects :grading_agent
+      expects :group
 
       executed do |context|
-        begin
-          group = Group.find(context[:raw_params]["group_id"])
-        rescue ActiveRecord::RecordNotFound
-          context.fail!("Unable to find group", error_code: 404)
-          next context
-        end
+        group = context.group
 
         group.students.each do |student|
           params = context[:raw_params].deep_dup
