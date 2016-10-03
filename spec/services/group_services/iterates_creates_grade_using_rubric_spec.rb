@@ -2,7 +2,7 @@ require "light-service"
 require "active_record_spec_helper"
 require "./app/services/group_services/iterates_creates_grade_using_rubric"
 
-describe Services::Actions::IteratesCreatesGradeUsingRubric, focus: true do
+describe Services::Actions::IteratesCreatesGradeUsingRubric do
   let(:world) { World.create.with(:course, :professor, :student, :assignment, :rubric, :criterion, :criterion_grade, :badge, :group) }
   let(:group_params) {{ "group_id" => world.group.id }}
   let(:raw_params) { RubricGradePUT.new(world).params.merge group_params }

@@ -13,13 +13,9 @@ module Services
       executed do |context|
         grade = Grade.find_or_create(context[:assignment].id,context[:student].id)
         grade.full_points = context[:assignment].full_points
-        grade.raw_points = context[:attributes]["grade"]["raw_points"]
-        grade.status = context[:attributes]["grade"]["status"]
-        grade.feedback = context[:attributes]["grade"]["feedback"]
-        grade.adjustment_points = context[:attributes]["grade"]["adjustment_points"]
-        grade.adjustment_points_feedback = context[:attributes]["grade"]["adjustment_points_feedback"]
-        grade.group_id = context[:attributes]["group_id"] if context[:attributes]["group_id"]
         grade.graded_by_id = context[:grading_agent].id
+        grade.assign_attributes context[:attributes]["grade"]
+        grade.group_id = context[:attributes]["group_id"] if context[:attributes]["group_id"]
         context[:grade] = grade
       end
     end
