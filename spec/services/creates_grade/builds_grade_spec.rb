@@ -3,15 +3,19 @@ require "active_record_spec_helper"
 require "./app/services/creates_grade/builds_grade"
 
 describe Services::Actions::BuildsGrade do
-
   let(:world) { World.create.with(:course, :professor, :student, :assignment, :rubric, :criterion, :criterion_grade, :badge) }
   let(:attributes) { RubricGradePUT.new(world).params }
   let(:context) {{
       attributes: attributes,
       student: world.student,
-      assignment: world.assignment,
-      grading_agent: world.professor
+      assignment: world.assignment
     }}
+
+  before(:each) do
+    attributes.each do |index, value|
+      value.merge!(graded_by_id: world.professor.id) if index == "grade"
+    end
+  end
 
   it "expects attributes to assign to grade" do
     context.delete(:attributes)

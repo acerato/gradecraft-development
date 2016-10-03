@@ -19,11 +19,11 @@ describe Services::Actions::IteratesCreatesGradeUsingRubric do
 
   it "iterates over the students in group" do
     expect(Services::CreatesGradeUsingRubric).to receive(:create).exactly(world.group.students.count).times.and_call_original
-    described_class.execute raw_params: raw_params, group: world.group, grading_agent: world.professor
+    described_class.execute raw_params: raw_params, group: world.group
   end
 
   it "adds the group id to the context" do
-    result = described_class.execute raw_params: raw_params, group: world.group, grading_agent: world.professor
+    result = described_class.execute raw_params: raw_params, group: world.group
     expect(result[:attributes]["group_id"]).to eq(world.group.id)
   end
 end

@@ -21,9 +21,8 @@
           - elsif presenter.assignment.pass_fail?
             = gf.select :pass_fail_status, [[], ["#{term_for :pass}", "Pass"], ["#{term_for :fail}", "Fail"]]
           - else
-            //TODO: revise updatable conditions for group
-            -# - if grade.persisted? && GradeProctor.new(grade).updatable?(user: current_user, course: current_course)
-            -#   = gf.text_field :raw_points, data: {autonumeric: true, "m-dec" => "0"}
-            -# - else
-            = gf.text_field :raw_points, value: nil, data: {autonumeric: true, "m-dec" => "0"}
+            - if gbg[:grade].persisted? && GradeProctor.new(gbg[:grade]).updatable?(user: current_user, course: current_course)
+              = gf.text_field :raw_points, value: gbg[:grade].raw_points, data: {autonumeric: true, "m-dec" => "0"}
+            - else
+              = gf.text_field :raw_points, value: nil , data: {autonumeric: true, "m-dec" => "0"}
     %td{:style => "text-align: left"}= "/ #{points presenter.assignment.full_points}" if !presenter.assignment.pass_fail?

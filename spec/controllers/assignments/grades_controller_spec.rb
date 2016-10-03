@@ -75,84 +75,161 @@ describe Assignments::GradesController do
     end
 
     describe "GET mass_edit" do
-      it "assigns params" do
-        get :mass_edit, assignment_id: @assignment.id
-        expect(assigns(:assignment)).to eq(@assignment)
-        expect(assigns(:assignment_type)).to eq(@assignment.assignment_type)
-        expect(assigns(:assignment_score_levels)).to eq(@assignment.assignment_score_levels)
-        expect(assigns(:grades)).to eq([@grade])
-        expect(assigns(:students)).to eq([@student])
-        expect(response).to render_template(:mass_edit)
-      end
-
-      it "creates missing grades and orders grades by student name" do
-        student_2 = create(:user, last_name: "zzimmer", first_name: "aaron")
-        student_3 = create(:user, last_name: "zzimmer", first_name: "zoron")
-        [student_2,student_3].each {|s| s.courses << @course }
-        expect{ get :mass_edit, assignment_id: @assignment.id }.to \
-          change{Grade.count}.by(2)
-        expect(assigns(:grades)[1].student).to eq(student_2)
-        expect(assigns(:grades)[2].student).to eq(student_3)
-      end
-
-      context "with teams" do
+      context "when the assignment does not have groups" do
         it "assigns params" do
-          team = create(:team, course: @course)
-          team.students << @student
-          get :mass_edit, assignment_id: @assignment.id, team_id: team.id
+          get :mass_edit, assignment_id: @assignment.id
+          expect(assigns(:assignment)).to eq(@assignment)
+          expect(assigns(:assignment_type)).to eq(@assignment.assignment_type)
+          expect(assigns(:assignment_score_levels)).to eq(@assignment.assignment_score_levels)
+          expect(assigns(:grades)).to eq([@grade])
           expect(assigns(:students)).to eq([@student])
-          expect(assigns(:team)).to eq(team)
+          expect(response).to render_template(:mass_edit)
+        end
+
+        it "creates missing grades and orders grades by student name" do
+          student_2 = create(:user, last_name: "zzimmer", first_name: "aaron")
+          student_3 = create(:user, last_name: "zzimmer", first_name: "zoron")
+          [student_2,student_3].each {|s| s.courses << @course }
+          expect{ get :mass_edit, assignment_id: @assignment.id }.to \
+            change{Grade.count}.by(2)
+          expect(assigns(:grades)[1].student).to eq(student_2)
+          expect(assigns(:grades)[2].student).to eq(student_3)
+        end
+
+        context "with teams" do
+          it "assigns params" do
+            team = create(:team, course: @course)
+            team.students << @student
+            get :mass_edit, assignment_id: @assignment.id, team_id: team.id
+            expect(assigns(:students)).to eq([@student])
+            expect(assigns(:team)).to eq(team)
+          end
+        end
+      end
+
+      context "when the assignment has groups" do
+        let(:course) { create(:course) }
+        let(:group) { create(:group, course: course) }
+        let(:group_2) { create(:group, course: course) }
+        let!(:assignment_group) { create(:assignment_group, group: group, assignment: assignment_with_groups) }
+        let!(:assignment_group_2) { create(:assignment_group, group: group_2, assignment: assignment_with_groups) }
+        let(:assignment_with_groups) { create(:group_assignment, course: course) }
+
+        before(:each) do
+          allow(controller).to receive(:current_course).and_return(course)
+          CourseMembership.create user: @professor, course: course, role: "professor"
+        end
+
+        it "assigns grades_by_groups" do
+          get :mass_edit, assignment_id: assignment_with_groups
+          expect(assigns(:grades_by_group)).to_not be_nil
+          expect(assigns(:grades_by_group).length).to eq(2)
+          expect(assigns(:grades_by_group).select { |gbg| gbg[:group] == group }).to_not be_nil
+          expect(assigns(:grades_by_group).select { |gbg| gbg[:group] == group_2 }).to_not be_nil
+        end
+
+        it "renders the mass_edit template" do
+          get :mass_edit, assignment_id: assignment_with_groups
+          expect(response).to render_template(:mass_edit)
         end
       end
     end
 
     describe "PUT mass_update" do
-      let(:grades_attributes) do
-        { "#{@assignment.reload.grades.index(@grade)}" =>
-          { graded_by_id: @professor.id, instructor_modified: true,
-            student_id: @grade.student_id, raw_points: 1000, status: "Graded",
-            id: @grade.id
+      context "when the assignment does not have groups" do
+        let(:grades_attributes) do
+          { "#{@assignment.reload.grades.index(@grade)}" =>
+            { graded_by_id: @professor.id, instructor_modified: true,
+              student_id: @grade.student_id, raw_points: 1000, status: "Graded",
+              id: @grade.id
+            }
           }
-        }
-      end
+        end
 
-      it "updates the grades for the specific assignment" do
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
-        expect(@grade.reload.raw_points).to eq 1000
-      end
+        it "updates the grades for the specific assignment" do
+          put :mass_update, assignment_id: @assignment.id,
+            assignment: { grades_attributes: grades_attributes }
+          expect(@grade.reload.raw_points).to eq 1000
+        end
 
-      it "timestamps the grades" do
-        current_time = DateTime.now
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
-        expect(@grade.reload.graded_at).to be > current_time
-      end
+        it "timestamps the grades" do
+          current_time = DateTime.now
+          put :mass_update, assignment_id: @assignment.id,
+            assignment: { grades_attributes: grades_attributes }
+          expect(@grade.reload.graded_at).to_not be_nil
+          expect(@grade.reload.graded_at).to be > current_time
+        end
 
-      it "only sends notifications to the students if the grade changed" do
-        @grade.update_attributes({ raw_points: 1000 })
-        run_background_jobs_immediately do
-          expect { put :mass_update, assignment_id: @assignment.id,
-                   assignment: { grades_attributes: grades_attributes } }.to_not \
-            change { ActionMailer::Base.deliveries.count }
+        it "only sends notifications to the students if the grade changed" do
+          @grade.update_attributes({ raw_points: 1000 })
+          run_background_jobs_immediately do
+            expect { put :mass_update, assignment_id: @assignment.id,
+                     assignment: { grades_attributes: grades_attributes } }.to_not \
+              change { ActionMailer::Base.deliveries.count }
+          end
+        end
+
+        it "redirects to assignment path with a team" do
+          team = create(:team, course: @course)
+          put :mass_update, assignment_id: @assignment.id, team_id: team.id,
+            assignment: { grades_attributes: grades_attributes }
+          expect(response).to \
+            redirect_to(assignment_path(@assignment, team_id: team.id))
+        end
+
+        it "redirects on failure" do
+          allow_any_instance_of(Assignment).to \
+            receive(:update_attributes).and_return false
+          put :mass_update, assignment_id: @assignment.id,
+            assignment: { grades_attributes: grades_attributes }
+          expect(response).to \
+            redirect_to(mass_edit_assignment_grades_path(@assignment))
         end
       end
 
-      it "redirects to assignment path with a team" do
-        team = create(:team, course: @course)
-        put :mass_update, assignment_id: @assignment.id, team_id: team.id,
-          assignment: { grades_attributes: grades_attributes }
-        expect(response).to \
-          redirect_to(assignment_path(@assignment, team_id: team.id))
-      end
+      context "when the assignment has groups" do
+        let(:course) { create(:course) }
+        let(:group) { create(:group, course: course) }
+        let(:group_2) { create(:group, course: course) }
+        let!(:assignment_group) { create(:assignment_group, group: group, assignment: assignment_with_groups) }
+        let!(:assignment_group_2) { create(:assignment_group, group: group_2, assignment: assignment_with_groups) }
+        let(:assignment_with_groups) { create(:group_assignment, course: course) }
+        let(:params) {
+          {
+            "0" => { graded_by_id: @professor.id, instructor_modified: true,
+              "group_id" => group.id, raw_points: 1000, status: "Graded",
+              assignment: assignment_with_groups.id
+            },
+            "1" => { graded_by_id: @professor.id, instructor_modified: true,
+              "group_id" => group_2.id, raw_points: 500, status: "Graded",
+              assignment: assignment_with_groups.id
+            }
+          }
+        }
 
-      it "redirects on failure" do
-        allow_any_instance_of(Assignment).to \
-          receive(:update_attributes).and_return false
-        put :mass_update, assignment_id: @assignment.id,
-          assignment: { grades_attributes: grades_attributes }
-        expect(response).to \
-          redirect_to(mass_edit_assignment_grades_path(@assignment))
+        before(:each) do
+          allow(controller).to receive(:current_course).and_return(course)
+          CourseMembership.create user: @professor, course: course, role: "professor"
+        end
+
+        describe "#mass_update_groups" do
+          it "should create grades for the students" do
+            expect(assignment_with_groups.grades.length).to be_zero
+            put :mass_update, assignment_id: assignment_with_groups.id,
+              assignment: { grades_by_group: params }
+            expect(assignment_with_groups.reload.grades.length).to eq(group.students.length + group_2.students.length)
+          end
+
+          it "updates the grade attributes" do
+            put :mass_update, assignment_id: assignment_with_groups.id,
+              assignment: { grades_by_group: params }
+            grade = Grade.unscoped.last
+            expect(grade.graded_by_id).to eq(@professor.id)
+            expect(grade.instructor_modified).to be true
+            expect(grade.raw_points).to eq(500)
+            expect(grade.status).to eq("Graded")
+          end
+        end
       end
     end
 

@@ -33,7 +33,8 @@ class API::CriterionGradesController < ApplicationController
 
   # PUT api/assignments/:assignment_id/students/:student_id/criterion_grades
   def update
-    result = Services::CreatesGradeUsingRubric.create params, current_user
+    merge_graded_by_id
+    result = Services::CreatesGradeUsingRubric.create params
     if result.success?
       render json: {
         message: "Grade successfully saved", success: true },
@@ -47,7 +48,7 @@ class API::CriterionGradesController < ApplicationController
   end
 
   # PUT api/assignments/:assignment_id/students/:student_id/criteria/:id/update_fields
-  def update_fields
+  def update_field
     cg = CriterionGrade.find_or_create(params[:assignment_id], params[:id], params[:student_id])
     result = cg.update_attributes(criterion_grade_params)
     if result
@@ -63,7 +64,8 @@ class API::CriterionGradesController < ApplicationController
 
   # PUT api/assignments/:assignment_id/groups/:group_id/criterion_grades
   def group_update
-    result = Services::CreatesGroupGradesUsingRubric.create params, current_user
+    merge_graded_by_id
+    result = Services::CreatesGroupGradesUsingRubric.create params
     if result.success?
       render json: {
         message: "Grade successfully saved", success: true
@@ -81,5 +83,11 @@ class API::CriterionGradesController < ApplicationController
 
   def criterion_grade_params
     params.require(:criterion_grade).permit(:comments)
+  end
+
+  def merge_graded_by_id
+    params.each do |index, value|
+      value.merge!(graded_by_id: current_user) if index == "grade"
+    end
   end
 end

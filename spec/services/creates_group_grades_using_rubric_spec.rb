@@ -9,12 +9,12 @@ describe Services::CreatesGroupGradesUsingRubric do
   describe ".create" do
     it "verifies that the group exists" do
       expect(Services::Actions::VerifiesGroup).to receive(:execute).and_call_original
-      described_class.create params, world.professor
+      described_class.create params
     end
 
     it "iterates through the students in a group" do
       expect(Services::Actions::IteratesCreatesGradeUsingRubric).to receive(:execute).and_call_original
-      described_class.create params, world.professor
+      described_class.create params
     end
   end
 end

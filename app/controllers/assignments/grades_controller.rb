@@ -1,3 +1,6 @@
+require_relative "../../services/creates_group_grades"
+require_relative "../../services/creates_many_group_grades"
+
 class Assignments::GradesController < ApplicationController
   before_filter :ensure_staff?, except: :self_log
   before_filter :ensure_student?, only: :self_log
@@ -73,39 +76,53 @@ class Assignments::GradesController < ApplicationController
   # Quickly grading a single assignment for all students
   def mass_edit
     @assignment = current_course.assignments.find(params[:assignment_id])
-    @assignment_type = @assignment.assignment_type
-    @assignment_score_levels = @assignment.assignment_score_levels.order_by_points
 
-    if params[:team_id].present?
-      @team = current_course.teams.find_by(id: params[:team_id])
-      @students = current_course.students_being_graded_by_team(@team)
+    if @assignment.has_groups?
+      @grades_by_group = @assignment.groups.map do |group|
+        { group: group, grade: Grade.find_or_create(@assignment.id, group.students.first.id) }
+      end
+
+      presenter = Assignments::Grades::MassEditPresenter.build({
+        assignment: @assignment
+      })
+      render :mass_edit, presenter
     else
-      @students = current_course.students_being_graded
-    end
+      @assignment_type = @assignment.assignment_type
+      @assignment_score_levels = @assignment.assignment_score_levels.order_by_points
 
-    @grades = Grade.find_or_create_grades(@assignment.id, @students.pluck(:id))
-    @grades = @grades.sort_by { |grade| [ grade.student.last_name, grade.student.first_name ] }
+      if params[:team_id].present?
+        @team = current_course.teams.find_by(id: params[:team_id])
+        @students = current_course.students_being_graded_by_team(@team)
+      else
+        @students = current_course.students_being_graded
+      end
+
+      @grades = Grade.find_or_create_grades(@assignment.id, @students.pluck(:id))
+      @grades = @grades.sort_by { |grade| [ grade.student.last_name, grade.student.first_name ] }
+    end
   end
 
   # PUT /assignments/:assignment_id/grades/mass_update
   # Updates all the grades for the students in a course for an assignment
   def mass_update
-    params[:assignment][:grades_attributes].each do |index, grade_params|
-      grade_params.merge!(graded_at: DateTime.now)
-    end if params[:assignment][:grades_attributes].present?
     @assignment = current_course.assignments.find(params[:assignment_id])
-    if @assignment.update_attributes(assignment_params)
-      # @mz TODO: add specs
-      enqueue_multiple_grade_update_jobs(mass_update_grade_ids)
 
-      if !params[:team_id].blank?
-        redirect_to assignment_path(@assignment, team_id: params[:team_id])
-      else
-        respond_with @assignment
-      end
+    success = false
+    if @assignment.has_groups?
+      assign_graded_at_date params[:assignment][:grades_by_group] if params[:assignment][:grades_by_group].present?
+      result = Services::CreatesManyGroupGrades.create @assignment.id, assignment_group_grades_params
+      success = result.success?
     else
-      redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id]),
-        notice: "Oops! There was an error while saving the grades!"
+      assign_graded_at_date params[:assignment][:grades_attributes] if params[:assignment][:grades_attributes].present?
+      success = @assignment.update_attributes(assignment_params)
+      # @mz TODO: add specs
+      enqueue_multiple_grade_update_jobs(mass_update_grade_ids) if success
+    end
+
+    if success
+      redirect_on_mass_update_success
+    else
+      redirect_on_mass_update_failure
     end
   end
 
@@ -168,6 +185,12 @@ class Assignments::GradesController < ApplicationController
                                                            :id]
   end
 
+  def assignment_group_grades_params
+    params.require(:assignment).permit grades_by_group: [:graded_by_id, :graded_at,
+                                                           :instructor_modified, :raw_points,
+                                                           :status, :pass_fail_status, :group_id]
+  end
+
   # Schedule the `GradeUpdater` for all grades provided
   def enqueue_multiple_grade_update_jobs(grade_ids)
     grade_ids.each { |id| GradeUpdaterJob.new(grade_id: id).enqueue }
@@ -182,5 +205,24 @@ class Assignments::GradesController < ApplicationController
       end
       memo
     end
+  end
+
+  def assign_graded_at_date(params)
+    params.each do |index, value|
+      value.merge!(graded_at: DateTime.now)
+    end
+  end
+
+  def redirect_on_mass_update_success
+    if !params[:team_id].blank?
+      redirect_to assignment_path(@assignment, team_id: params[:team_id])
+    else
+      respond_with @assignment
+    end
+  end
+
+  def redirect_on_mass_update_failure
+    redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id]),
+      notice: "Oops! There was an error while saving the grades!"
   end
 end
