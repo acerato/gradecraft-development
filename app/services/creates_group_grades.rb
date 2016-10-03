@@ -6,8 +6,8 @@ module Services
   class CreatesGroupGrades
     extend LightService::Organizer
 
-    def self.create(group_id, grade, assignment)
-      with(attributes: { "group_id" => group_id, grade: grade, assignment: assignment })
+    def self.create(group_id, grade_attributes, assignment_id)
+      with(attributes: { "group_id" => group_id, "grade" => grade_attributes, "assignment_id" => assignment_id })
         .reduce(
           Actions::VerifiesGroup,
           Actions::IteratesCreatesGrade
