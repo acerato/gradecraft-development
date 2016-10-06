@@ -10,91 +10,21 @@
           Select #{term_for :team}
         = select_tag :team_id, options_for_select(presenter.teams.map { |t| [t.name, t.id] }, presenter.team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
 
-  - if presenter.grade_with_rubric?
+  - presenter.students_being_graded.each do |student|
+    - grade = student.grade_for_assignment(presenter.assignment)
+    - if grade.present? && grade.instructor_modified?
+      %h4.uppercase= student.name
+      .left
+        %h5.bold= "#{points grade.score} / #{points presenter.assignment.full_points} points "
+      .right= link_to "Edit #{student.first_name}'s Grade", edit_grade_path(grade), class: "button"
+      %br
+      %br
 
-    .rubric-container
-      %table#rubric-results-table
-        %thead
-          %tr
-            %td.criterion.heading
-              Criterion:&nbsp;Max&nbsp;points
+    - if presenter.grade_with_rubric?
+      = render partial: "assignments/rubric_grade_review", locals: { presenter: presenter, student: student, grade: grade }
 
-            %td.level.heading(colspan="#{presenter.rubric.max_level_count}")
-              Level: Points Awarded
-        %tbody
-          - presenter.assignment.rubric.criteria.ordered.includes(levels: :level_badges).each do |criterion|
-            %tr
-              %td.criterion
-                .criterion-heading
-                  .criterion-name= criterion.name
-                  .criterion-points= "#{points criterion.max_points} Points"
-                  .clear
-                .criterion-description= criterion.description
+    - if grade.graded_by.present? && grade.feedback.present?
+      %b= "Feedback from #{ grade.graded_by.name }:"
+      %p.summary-comments= raw grade.feedback
 
-              - criterion.levels.order("points ASC").each do |level|
-                %td.level.level-level
-                  .level-heading
-                    .level-name= level.name
-                    .clear
-                    .level-points= "#{points level.points} Points"
-                  .clear
-                  .level-description= level.description
-
-                  .row.badge-row
-                    - level.level_badges.each_with_index do |badge, index|
-                      - if index < 2
-                        %span.level-badge-image
-                          %img{:src => badge.badge.icon, width: "30px", height: "30px" }
-                    .clear
-
-                  - if !presenter.hide_analytics?
-                    - unless level.criterion_grades(current_user).empty?
-                      .students-padding
-                      .graded-students= "#{pluralize(level.criterion_grades(current_user).size, 'student')} earned this level"
-
-
-
-    - presenter.students_being_graded.each do |student|
-      - grade_for_assignment = student.grade_for_assignment(presenter.assignment)
-      - if grade_for_assignment.present? && grade_for_assignment.instructor_modified?
-        %h4.uppercase= student.name
-        .left
-          %h5.bold= "#{points grade_for_assignment.score} / #{points presenter.assignment.full_points} points "
-        .right= link_to "Edit #{student.first_name}'s Grade", edit_grade_path(grade_for_assignment), class: "button"
-        %br
-        %br
-        .rubric-container
-          %table#rubric-results-table
-            %thead
-              %tr
-                %td.criterion.heading
-                  Criterion:&nbsp;Max&nbsp;points
-
-                %td.level.heading(colspan="#{presenter.rubric.max_level_count}")
-                  Level: Points Awarded
-                %td.comments.heading
-                  Comments
-
-
-            %tbody
-              - @criteria.each do |criterion|
-                - criterion_grade = @criterion_grades.where(student_id: student.id, criterion_id: criterion.id).first
-                %tr
-                  %td.criterion
-                    .criterion-heading
-                      .criterion-name= criterion.name
-
-                  - criterion.levels.order("points ASC").each do |level|
-                    %td.level.level-level
-                      .level-heading
-                        .level-name= level.name
-
-                      - if criterion_grade.level_id == level.id
-                        .earned_level #{student.first_name} earned this level
-
-                  %td.level.level-comments.comments-box
-                    = raw criterion_grade.comments
-        %br
-        %b= "Feedback from #{ grade_for_assignment.graded_by.name }:" if grade_for_assignment.graded_by.present?
-        %p.summary-comments= raw grade_for_assignment.try(:feedback)
-        %hr
+    %hr

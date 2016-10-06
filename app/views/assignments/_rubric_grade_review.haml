@@ -1,0 +1,31 @@
+.rubric-container
+  %table#rubric-results-table
+    %thead
+      %tr
+        %td.criterion.heading
+          Criterion:&nbsp;Max&nbsp;points
+
+        %td.level.heading(colspan="#{presenter.rubric.max_level_count}")
+          Level: Points Awarded
+        %td.comments.heading
+          Comments
+
+
+    %tbody
+      - @criteria.each do |criterion|
+        - criterion_grade = @criterion_grades.where(student_id: student.id, criterion_id: criterion.id).first
+        %tr
+          %td.criterion
+            .criterion-heading
+              .criterion-name= criterion.name
+
+          - criterion.levels.order("points ASC").each do |level|
+            %td.level{class: ("level-earned" if criterion_grade.level_id == level.id)}
+              .level-heading
+                .level-name= level.name
+
+              - if criterion_grade.level_id == level.id
+                .earned_level #{student.first_name} earned this level
+
+          %td.level.level-comments.comments-box
+            = raw criterion_grade.comments
