@@ -1,5 +1,3 @@
-= content_nav_for presenter.assignment, "Review Rubric Grades"
-
 %h3.pagetitle= "#{presenter.assignment.name} Review Rubric Grades (#{ points presenter.assignment.full_points } points)"
 
 .pageContent
@@ -7,7 +5,7 @@
 
   - if presenter.has_teams? && presenter.assignment.is_individual?
     .team-filter
-      = form_tag criterion_grades_review_assignment_path(presenter.assignment), name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
+      = form_tag grades_review_assignment_path(presenter.assignment), name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
         %label.sr-only{:for => "team_id"}
           Select #{term_for :team}
         = select_tag :team_id, options_for_select(presenter.teams.map { |t| [t.name, t.id] }, presenter.team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"

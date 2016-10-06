@@ -67,7 +67,7 @@ GradeCraft::Application.routes.draw do
     end
 
     member do
-      get "criterion_grades_review"
+      get "grades_review"
     end
 
     # routes for all grades that are associated with an assignment
