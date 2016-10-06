@@ -6,23 +6,12 @@
   %span.form_label Level name
   %input.level(name='level' ng-model='element.level')
 
-  %span.form_label Low Point Threshold
+  %span.form_label Point Threshold
   %input.low-range(type='number'
                    ng-model='element.lowest_points'
                    ng-model-options='{allowInvalid: true}'
-                   ng-change='updateNextElement($index)'
                    required
-                   name='lowest_points'
-                   max='{{lowPointsMax($index)}}')
-
-  %span.form_label High Point Threshold
-  %input.high-range(type='number'
-                    ng-model='element.highest_points'
-                    ng-model-options='{allowInvalid: true}'
-                    ng-change='updatePreviousElement($index)'
-                    required
-                    name='highest_points'
-                    min='{{highPointsMin($index)}}')
+                   name='lowest_points')
 
   .right
     %span
