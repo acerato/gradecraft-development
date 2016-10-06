@@ -2,5 +2,8 @@
   %h5.level-name You earned 
 %h5.level-name= "#{level.name}: #{points level.points} Points"
 - if level.meets_expectations || level.above_expectations?
-  %p.italic.meets-expectations-label Meets Expectations
+  .meets-expectations-label
+    %a.italic Meets Expectations
+    .display_on_hover.hover-style
+      %p This level is above the threshold for meeting expectations on this criterion.
 .level-description= level.description

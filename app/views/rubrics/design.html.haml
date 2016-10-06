@@ -16,6 +16,11 @@
       –
       %span Rubric is saved automatically.
 
+      .meets-expectations-hint
+        %a.italic What does "Set as 'meets expectations' mean?"
+        .display_on_hover.hover-style
+          %p Adding this marker to a level sets a threshold so that all levels below this do not earn any points.
+
       - if ! @assignment.grade_with_rubric?
         .clear
         %a.button{href: index_for_copy_assignment_rubrics_path(@assignment) }
