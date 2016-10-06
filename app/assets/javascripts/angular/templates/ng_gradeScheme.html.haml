@@ -25,9 +25,9 @@
                     min='{{highPointsMin($index)}}')
 
   .right
-    %button.remove-element.button.alert(type='button' ng-click='gradeService.remove($index)')
-      Remove
-      %i.fa.fa-times
-
-  %button.add-element.button(type='button' ng-click='gradeService.addNew($index)')
-    %i.fa.fa-plus Add A Level
+    %span
+      %button.add-element.button(type='button' ng-click='gradeService.addNew($index)')
+        %i.fa.fa-plus Add A Level
+      %button.remove-element.button.alert(type='button' ng-click='gradeService.remove($index)')
+        Remove
+        %i.fa.fa-times
