@@ -48,7 +48,7 @@ class API::CriterionGradesController < ApplicationController
   end
 
   # PUT api/assignments/:assignment_id/students/:student_id/criteria/:id/update_fields
-  def update_field
+  def update_fields
     cg = CriterionGrade.find_or_create(params[:assignment_id], params[:id], params[:student_id])
     result = cg.update_attributes(criterion_grade_params)
     if result
