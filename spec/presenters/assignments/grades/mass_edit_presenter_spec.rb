@@ -37,4 +37,18 @@ describe Assignments::Grades::MassEditPresenter do
       expect(subject.assignment_score_levels).to eq assignment_score_levels
     end
   end
+
+  describe "#grades_by_group" do
+    let(:assignment_group_1) { double(:groups, group_id: 1, students: [ double(:student, id: 1) ]) }
+    let(:assignment_group_2) { double(:groups, group_id: 2, students: [ double(:student, id: 2) ]) }
+
+    it "returns grades organized by group" do
+      allow(assignment).to receive(:groups).and_return [ assignment_group_1, assignment_group_2 ]
+      allow(assignment).to receive(:id).and_return 1
+      allow(Grade).to receive(:find_or_create).and_return double(:grade, { grade_id: 1 })
+      result = subject.grades_by_group
+      expect(result.count).to eq 2
+      expect(result).to all include :group, :grade
+    end
+  end
 end

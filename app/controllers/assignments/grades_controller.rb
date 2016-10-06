@@ -78,10 +78,6 @@ class Assignments::GradesController < ApplicationController
     @assignment = current_course.assignments.find(params[:assignment_id])
 
     if @assignment.has_groups?
-      @grades_by_group = @assignment.groups.map do |group|
-        { group: group, grade: Grade.find_or_create(@assignment.id, group.students.first.id) }
-      end
-
       presenter = Assignments::Grades::MassEditPresenter.build({
         assignment: @assignment
       })

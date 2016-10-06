@@ -1,4 +1,4 @@
-- @grades_by_group.each_with_index do |gbg, i|
+- presenter.grades_by_group.each_with_index do |gbg, i|
   %tr
     %td{:style => "text-align: right"}= link_to gbg[:group].name, group_path(gbg[:group])
     %td.center
