@@ -101,7 +101,7 @@ class GradeSchemeElementsController < ApplicationController
     gse_attributes.each_with_index do |gse, i|
       next_gse = gse_attributes[i+1]
       if next_gse.nil?
-        # TODO: Make sure last element's highest_points is course's max points
+        # Make sure last element's highest_points is course's max points
         if gse["lowest_points"] < @course.total_points.to_i
           gse["highest_points"] = @course.total_points.to_i
         else
