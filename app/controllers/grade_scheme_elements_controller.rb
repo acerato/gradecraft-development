@@ -78,7 +78,35 @@ class GradeSchemeElementsController < ApplicationController
   end
 
   def grade_scheme_elements_attributes_params
+    fix_grade_scheme_elements_attributes_params
     params.permit grade_scheme_elements_attributes: [:id, :letter, :lowest_points,
       :highest_points, :level, :description, :course_id]
+  end
+
+  def fix_grade_scheme_elements_attributes_params
+    gse_attributes = params["grade_scheme_elements_attributes"]
+
+    gse_attributes.sort_by! { |e| e["lowest_points"] }
+
+    # Make sure first element's lowest_points is zero
+    if gse_attributes.first["lowest_points"] != 0
+      gse_attributes.unshift({
+        "level"=>"-", "lowest_points"=>0, "letter"=>"", "highest_points"=>0
+      })
+    end
+
+    gse_attributes.each_with_index do |gse, i|
+      next_gse = gse_attributes[i+1]
+      if next_gse.nil?
+        # TODO: Make sure last element's highest_points is course's max points
+        if gse["lowest_points"] < @course.total_points
+          gse["highest_points"] = @course.total_points
+        else
+          gse["highest_points"] = gse["highest_points"] + 1
+        end
+      else
+        gse["highest_points"] = next_gse["lowest_points"] - 1
+      end
+    end
   end
 end
