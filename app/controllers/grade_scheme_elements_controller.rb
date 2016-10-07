@@ -99,13 +99,13 @@ class GradeSchemeElementsController < ApplicationController
       next_gse = gse_attributes[i+1]
       if next_gse.nil?
         # TODO: Make sure last element's highest_points is course's max points
-        if gse["lowest_points"] < @course.total_points
-          gse["highest_points"] = @course.total_points
+        if gse["lowest_points"] < @course.total_points.to_i
+          gse["highest_points"] = @course.total_points.to_i
         else
-          gse["highest_points"] = gse["highest_points"] + 1
+          gse["highest_points"] = gse["highest_points"].to_i + 1
         end
       else
-        gse["highest_points"] = next_gse["lowest_points"] - 1
+        gse["highest_points"] = next_gse["lowest_points"].to_i - 1
       end
     end
   end
