@@ -83,6 +83,9 @@ class GradeSchemeElementsController < ApplicationController
       :highest_points, :level, :description, :course_id]
   end
 
+  # Clean up the grade_scheme_elements_attributes param and modify
+  # highest_points for each Element to be one point lower than the next level's
+  # lowest_points.
   def fix_grade_scheme_elements_attributes_params
     gse_attributes = params["grade_scheme_elements_attributes"]
 
