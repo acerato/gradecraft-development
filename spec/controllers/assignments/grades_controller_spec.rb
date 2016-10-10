@@ -170,8 +170,8 @@ describe Assignments::GradesController do
         end
 
         it "redirects on failure" do
-          allow_any_instance_of(Assignment).to \
-            receive(:update_attributes).and_return false
+          allow(Services::CreatesManyGrades).to \
+            receive(:create).and_return double(:result, success?: false, message: "")
           put :mass_update, assignment_id: @assignment.id,
             assignment: { grades_attributes: grades_attributes }
           expect(response).to \
@@ -204,23 +204,30 @@ describe Assignments::GradesController do
           CourseMembership.create user: @professor, course: course, role: "professor"
         end
 
-        describe "#mass_update_groups" do
-          it "should create grades for the students" do
-            expect(assignment_with_groups.grades.length).to be_zero
-            put :mass_update, assignment_id: assignment_with_groups.id,
-              assignment: { grades_by_group: params }
-            expect(assignment_with_groups.reload.grades.length).to eq(group.students.length + group_2.students.length)
-          end
+        it "should create grades for the students" do
+          expect(assignment_with_groups.grades.length).to be_zero
+          put :mass_update, assignment_id: assignment_with_groups.id,
+            assignment: { grades_by_group: params }
+          expect(assignment_with_groups.reload.grades.length).to eq(group.students.length + group_2.students.length)
+        end
 
-          it "updates the grade attributes" do
-            put :mass_update, assignment_id: assignment_with_groups.id,
-              assignment: { grades_by_group: params }
-            grade = Grade.unscoped.last
-            expect(grade.graded_by_id).to eq(@professor.id)
-            expect(grade.instructor_modified).to be true
-            expect(grade.raw_points).to eq(500)
-            expect(grade.status).to eq("Graded")
-          end
+        it "updates the grade attributes" do
+          put :mass_update, assignment_id: assignment_with_groups.id,
+            assignment: { grades_by_group: params }
+          grade = Grade.unscoped.last
+          expect(grade.graded_by_id).to eq(@professor.id)
+          expect(grade.instructor_modified).to be true
+          expect(grade.raw_points).to eq(500)
+          expect(grade.status).to eq("Graded")
+        end
+
+        it "redirects on failure" do
+          allow(Services::CreatesManyGroupGrades).to \
+            receive(:create).and_return double(:result, success?: false, message: "")
+          put :mass_update, assignment_id: assignment_with_groups.id,
+            assignment: { grades_by_group: params }
+          expect(response).to \
+            redirect_to(mass_edit_assignment_grades_path(assignment_with_groups))
         end
       end
     end

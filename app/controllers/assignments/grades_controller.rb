@@ -1,3 +1,4 @@
+require_relative "../../services/creates_many_grades"
 require_relative "../../services/creates_group_grades"
 require_relative "../../services/creates_many_group_grades"
 
@@ -99,28 +100,25 @@ class Assignments::GradesController < ApplicationController
   end
 
   # PUT /assignments/:assignment_id/grades/mass_update
-  # Updates all the grades for the students in a course for an assignment
+  # Updates all the grades for the students or groups in a course for an assignment
   def mass_update
     @assignment = current_course.assignments.find(params[:assignment_id])
 
-    success = false
     if @assignment.has_groups?
-      result = Services::CreatesManyGroupGrades.create @assignment.id, current_user.id, assignment_group_grades_params
-      success = result.success?
+      @result = Services::CreatesManyGroupGrades.create @assignment.id, current_user.id, assignment_group_grades_params
     else
-      params[:assignment][:grades_attributes].each do |index, value|
-        value.merge!(graded_at: DateTime.now)
-      end if params[:assignment][:grades_attributes].present?
-
-      success = @assignment.update_attributes(assignment_params)
-      # @mz TODO: add specs
-      enqueue_multiple_grade_update_jobs(mass_update_grade_ids) if success
+      @result = Services::CreatesManyGrades.create @assignment.id, current_user.id, assignment_params[:grades_attributes]
     end
 
-    if success
-      redirect_on_mass_update_success
+    if @result.success?
+      if !params[:team_id].blank?
+        redirect_to assignment_path(@assignment, team_id: params[:team_id])
+      else
+        respond_with @assignment
+      end
     else
-      redirect_on_mass_update_failure
+      redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id]),
+        notice: "Oops! There was an error while saving the grades!"
     end
   end
 
@@ -203,18 +201,5 @@ class Assignments::GradesController < ApplicationController
       end
       memo
     end
-  end
-
-  def redirect_on_mass_update_success
-    if !params[:team_id].blank?
-      redirect_to assignment_path(@assignment, team_id: params[:team_id])
-    else
-      respond_with @assignment
-    end
-  end
-
-  def redirect_on_mass_update_failure
-    redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id]),
-      notice: "Oops! There was an error while saving the grades!"
   end
 end
