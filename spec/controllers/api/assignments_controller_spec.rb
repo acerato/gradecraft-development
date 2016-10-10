@@ -1,7 +1,7 @@
 require "rails_spec_helper"
 include SessionHelper
 
-describe API::PredictedEarnedGradesController , focus: true do
+describe API::AssignmentsController do
   let(:course) { create :course}
   let(:student)  { create(:student_course_membership, course: course).user }
   let(:professor) { create(:professor_course_membership, course: course).user }
