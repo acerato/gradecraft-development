@@ -105,11 +105,13 @@ class Assignments::GradesController < ApplicationController
 
     success = false
     if @assignment.has_groups?
-      assign_graded_at_date params[:assignment][:grades_by_group] if params[:assignment][:grades_by_group].present?
-      result = Services::CreatesManyGroupGrades.create @assignment.id, assignment_group_grades_params
+      result = Services::CreatesManyGroupGrades.create @assignment.id, current_user.id, assignment_group_grades_params
       success = result.success?
     else
-      assign_graded_at_date params[:assignment][:grades_attributes] if params[:assignment][:grades_attributes].present?
+      params[:assignment][:grades_attributes].each do |index, value|
+        value.merge!(graded_at: DateTime.now)
+      end if params[:assignment][:grades_attributes].present?
+
       success = @assignment.update_attributes(assignment_params)
       # @mz TODO: add specs
       enqueue_multiple_grade_update_jobs(mass_update_grade_ids) if success
@@ -200,12 +202,6 @@ class Assignments::GradesController < ApplicationController
         memo << grade.id
       end
       memo
-    end
-  end
-
-  def assign_graded_at_date(params)
-    params.each do |index, value|
-      value.merge!(graded_at: DateTime.now)
     end
   end
 

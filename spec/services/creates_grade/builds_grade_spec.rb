@@ -8,14 +8,9 @@ describe Services::Actions::BuildsGrade do
   let(:context) {{
       attributes: attributes,
       student: world.student,
-      assignment: world.assignment
+      assignment: world.assignment,
+      graded_by_id: world.professor.id
     }}
-
-  before(:each) do
-    attributes.each do |index, value|
-      value.merge!(graded_by_id: world.professor.id) if index == "grade"
-    end
-  end
 
   it "expects attributes to assign to grade" do
     context.delete(:attributes)
@@ -41,6 +36,7 @@ describe Services::Actions::BuildsGrade do
   end
 
   it "adds attributes to the grade" do
+    initial_time = DateTime.now
     result = described_class.execute context
     expect(result[:grade].assignment_id).to eq world.assignment.id
     expect(result[:grade].student_id).to eq world.student.id
@@ -51,6 +47,7 @@ describe Services::Actions::BuildsGrade do
     expect(result[:grade].adjustment_points).to eq -10
     expect(result[:grade].adjustment_points_feedback).to eq "reduced by 10 points"
     expect(result[:grade].graded_by_id).to eq(world.professor.id)
+    expect(result[:grade].graded_at).to be > initial_time
   end
 
   it "adds the group id if supplied" do

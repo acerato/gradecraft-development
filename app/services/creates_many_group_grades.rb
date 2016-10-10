@@ -5,8 +5,8 @@ module Services
   class CreatesManyGroupGrades
     include LightService::Organizer
 
-    def self.create(assignment_id, grades_by_group_params)
-      with(assignment_id: assignment_id, grades_by_group_params: grades_by_group_params)
+    def self.create(assignment_id, graded_by_id, grades_by_group_params)
+      with(assignment_id: assignment_id, graded_by_id: graded_by_id, grades_by_group_params: grades_by_group_params)
         .reduce(
           Actions::IteratesAssignmentGroupsToCreateGrades
         )

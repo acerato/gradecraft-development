@@ -18,7 +18,7 @@ describe Assignments::GradesController do
       @professor = create(:user)
       CourseMembership.create user: @professor, course: @course, role: "professor"
     end
-    before (:each) { login_user(@professor) }
+    before(:each) { login_user(@professor) }
 
     describe "GET edit_status" do
       it "assigns params" do

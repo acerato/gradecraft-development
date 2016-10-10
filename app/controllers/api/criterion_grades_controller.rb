@@ -33,8 +33,7 @@ class API::CriterionGradesController < ApplicationController
 
   # PUT api/assignments/:assignment_id/students/:student_id/criterion_grades
   def update
-    merge_graded_by_id
-    result = Services::CreatesGradeUsingRubric.create params
+    result = Services::CreatesGradeUsingRubric.create params, current_user.id
     if result.success?
       render json: {
         message: "Grade successfully saved", success: true },
@@ -64,8 +63,7 @@ class API::CriterionGradesController < ApplicationController
 
   # PUT api/assignments/:assignment_id/groups/:group_id/criterion_grades
   def group_update
-    merge_graded_by_id
-    result = Services::CreatesGroupGradesUsingRubric.create params
+    result = Services::CreatesGroupGradesUsingRubric.create params, current_user.id
     if result.success?
       render json: {
         message: "Grade successfully saved", success: true
@@ -83,11 +81,5 @@ class API::CriterionGradesController < ApplicationController
 
   def criterion_grade_params
     params.require(:criterion_grade).permit(:comments)
-  end
-
-  def merge_graded_by_id
-    params.each do |index, value|
-      value.merge!(graded_by_id: current_user) if index == "grade"
-    end
   end
 end

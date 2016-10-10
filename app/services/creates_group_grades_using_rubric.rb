@@ -8,8 +8,8 @@ module Services
 
     aliases raw_params: :attributes
 
-    def self.create(raw_params)
-      with(raw_params: raw_params)
+    def self.create(raw_params, graded_by_id)
+      with(raw_params: raw_params, graded_by_id: graded_by_id)
         .reduce(
           Actions::VerifiesGroup,
           Actions::IteratesCreatesGradeUsingRubric
