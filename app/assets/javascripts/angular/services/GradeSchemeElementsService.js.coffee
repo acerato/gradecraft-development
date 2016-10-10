@@ -37,8 +37,7 @@
       {
         letter: ''
         level: ''
-        highest_points: highestPoints(index)
-        lowest_points: lowestPoints(index)
+        lowest_points: null
       }
 
     highestPoints = (index) ->
