@@ -3,7 +3,6 @@
     %td{:style => "text-align: right"}= link_to gbg[:group].name, group_path(gbg[:group])
     %td.center
       = f.simple_fields_for "grades_by_group[]", i do |gf|
-        = gf.hidden_field :graded_by_id, value: current_user.id
         - if !gbg[:grade].status
           = gf.hidden_field :status, value: "Graded"
         = gf.hidden_field :instructor_modified, value: true
